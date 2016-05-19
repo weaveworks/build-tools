@@ -4,3 +4,4 @@ socks/image.tar
 runner/runner
 *.pyc
 *~
+thingdoer/thingdoer
