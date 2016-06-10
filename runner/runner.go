@@ -21,6 +21,7 @@ import (
 const (
 	defaultSchedulerHost = "positive-cocoa-90213.appspot.com"
 	jsonContentType      = "application/json"
+	testTimeout          = time.Second * 200
 )
 
 var (
@@ -96,7 +97,16 @@ func (t test) run(hosts []string) bool {
 	}
 
 	start := time.Now()
-	err := cmd.Run()
+	var err error
+
+	c := make(chan error, 1)
+	go func() { c <- cmd.Run() }()
+	select {
+	case err = <-c:
+	case <-time.After(testTimeout):
+		err = fmt.Errorf("timed out")
+	}
+
 	duration := float64(time.Now().Sub(start)) / float64(time.Second)
 
 	consoleLock.Lock()
