@@ -29,10 +29,10 @@ var (
 
 func usage() {
 	fmt.Println(`Usage:
-	deploy <image>:<version>   Deploy image to your configured env
-	list                       List recent deployments
-	config (<filename>)        Get (or set) the configured env
-	logs <deploy>              Show lots for the given deployment`)
+	deploy (-m) <image>:<version>   Deploy image to your configured env
+	list                            List recent deployments
+	config (<filename>)             Get (or set) the configured env
+	logs <deploy>                   Show lots for the given deployment`)
 }
 
 func main() {
@@ -62,6 +62,15 @@ func main() {
 }
 
 func deploy(c Client, args []string) {
+	var (
+		flags   = flag.NewFlagSet("", flag.ContinueOnError)
+		message = flags.String("m", "", "Commit message template.")
+	)
+	if err := flags.Parse(args); err != nil {
+		usage()
+		return
+	}
+	args = flags.Args()
 	if len(args) != 1 {
 		usage()
 		return
@@ -72,8 +81,9 @@ func deploy(c Client, args []string) {
 		return
 	}
 	deployment := Deployment{
-		ImageName: parts[0],
-		Version:   parts[1],
+		ImageName:             parts[0],
+		Version:               parts[1],
+		CommitMessageTemplate: *message,
 	}
 	if err := c.Deploy(deployment); err != nil {
 		fmt.Println(err.Error())
