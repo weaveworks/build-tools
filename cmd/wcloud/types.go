@@ -12,7 +12,8 @@ type Deployment struct {
 	Version   string    `json:"version"`
 	Priority  int       `json:"priority"`
 	State     string    `json:"status"`
-	LogKey    string    `json:"-"`
+
+	CommitMessageTemplate string `json:"message_template"` // See https://golang.org/pkg/text/template/
 }
 
 // Config for the deployment system for a user.
