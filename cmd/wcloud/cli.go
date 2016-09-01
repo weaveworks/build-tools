@@ -23,7 +23,7 @@ func env(key, def string) string {
 	return def
 }
 
-func instancesFile() string {
+func contextsFile() string {
 	u, err := user.Current()
 	if err != nil {
 		panic(err)
@@ -38,14 +38,15 @@ func usage() {
 	list                       List recent deployments
 	config (<filename>)        Get (or set) the configured env
 	logs <deploy>              Show lots for the given deployment
-	instance (<name>)          Get (or set) the configured instance
+	context (<name>)           Get (or set) the configured context
 
 	Environment Variables:
 	  SERVICE_TOKEN            Set the service token to use, overrides %s
 	  BASE_URL                 Set the deploy to connect to, overrides %s
 `,
-		instancesFile(),
-		instancesFile())
+		contextsFile(),
+		contextsFile(),
+	)
 }
 
 func main() {
@@ -54,13 +55,19 @@ func main() {
 		os.Exit(1)
 	}
 
-	currentInstance, err := loadCurrentInstance()
+	// We don't need to create a client for this.
+	if os.Args[1] == "context" {
+		context(os.Args[2:])
+		return
+	}
+
+	currentContext, err := loadCurrentContext()
 	if err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
-	token := env("SERVICE_TOKEN", currentInstance.ServiceToken)
-	baseURL := env("BASE_URL", currentInstance.BaseURL)
+	token := env("SERVICE_TOKEN", currentContext.ServiceToken)
+	baseURL := env("BASE_URL", currentContext.BaseURL)
 	if baseURL == "" {
 		baseURL = "https://cloud.weave.works"
 	}
@@ -74,8 +81,6 @@ func main() {
 		list(c, os.Args[2:])
 	case "config":
 		config(c, os.Args[2:])
-	case "instance":
-		instance(c, os.Args[2:])
 	case "logs":
 		logs(c, os.Args[2:])
 	case "events":
@@ -237,87 +242,87 @@ func config(c Client, args []string) {
 	}
 }
 
-func loadInstances() (InstancesFile, error) {
-	filename := instancesFile()
+func loadContexts() (ContextsFile, error) {
+	filename := contextsFile()
 	buf, err := ioutil.ReadFile(filename)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return InstancesFile{}, nil
+			return ContextsFile{}, nil
 		}
-		return InstancesFile{}, err
+		return ContextsFile{}, err
 	}
-	var instances InstancesFile
-	if err := yaml.Unmarshal(buf, &instances); err != nil {
-		return InstancesFile{}, err
+	var contexts ContextsFile
+	if err := yaml.Unmarshal(buf, &contexts); err != nil {
+		return ContextsFile{}, err
 	}
-	return instances, err
+	return contexts, err
 }
 
-func loadCurrentInstance() (*Instance, error) {
-	instances, err := loadInstances()
+func loadCurrentContext() (Context, error) {
+	contexts, err := loadContexts()
 	if err != nil {
-		return nil, err
+		return Context{}, err
 	}
-	return instances.Instances[instances.Current], nil
+	return contexts.Contexts[contexts.Current], nil
 }
 
-func saveInstances(i InstancesFile) error {
+func saveContexts(i ContextsFile) error {
 	buf, err := yaml.Marshal(i)
 	if err != nil {
 		return err
 	}
 
-	return ioutil.WriteFile(instancesFile(), buf, 0600)
+	return ioutil.WriteFile(contextsFile(), buf, 0600)
 }
 
-func instance(c Client, args []string) {
+func context(args []string) {
 	if len(args) > 1 {
 		usage()
 		return
 	}
 
 	if len(args) == 1 {
-		// Setting the current instance name
-		instances, err := loadInstances()
+		// Setting the current context name
+		contexts, err := loadContexts()
 		if err != nil {
 			fmt.Println(err.Error())
 			os.Exit(1)
 		}
 
-		_, ok := instances.Instances[args[0]]
+		_, ok := contexts.Contexts[args[0]]
 		if !ok {
-			fmt.Printf("Instance %q not found in %s\n", args[0], instancesFile())
-			fmt.Printf("Available: %s\n", strings.Join(instances.Available(), " "))
+			fmt.Printf("Context %q not found in %s\n", args[0], contextsFile())
+			fmt.Printf("Available: %s\n", strings.Join(contexts.Available(), " "))
 			os.Exit(1)
 		}
 
-		instances.Current = args[0]
-		if err := saveInstances(instances); err != nil {
+		contexts.Current = args[0]
+		if err := saveContexts(contexts); err != nil {
 			fmt.Println(err.Error())
 			os.Exit(1)
 		}
 	} else {
-		// Getting the current instance
-		instances, err := loadInstances()
+		// Getting the current context
+		contexts, err := loadContexts()
 		if err != nil {
 			fmt.Println(err.Error())
 			os.Exit(1)
 		}
 
-		if instances.Current == "" {
+		if contexts.Current == "" {
 			fmt.Println("<none>")
-			fmt.Printf("Available: %s\n", strings.Join(instances.Available(), " "))
+			fmt.Printf("Available: %s\n", strings.Join(contexts.Available(), " "))
 			os.Exit(0)
 		}
 
-		current, ok := instances.Instances[instances.Current]
+		current, ok := contexts.Contexts[contexts.Current]
 		if !ok {
-			fmt.Printf("Instance %q not found in %s\n", args[0], instancesFile())
+			fmt.Printf("Context %q not found in %s\n", args[0], contextsFile())
 			os.Exit(1)
 		}
 
-		buf, err := yaml.Marshal(map[string]*Instance{
-			instances.Current: current,
+		buf, err := yaml.Marshal(map[string]Context{
+			contexts.Current: current,
 		})
 		if err != nil {
 			fmt.Println(err.Error())

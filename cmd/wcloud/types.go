@@ -38,23 +38,23 @@ type NotificationConfig struct {
 	MessageTemplate string `json:"message_template" yaml:"message_template"`
 }
 
-// InstancesFile is used to store local wcloud instance configs
-type InstancesFile struct {
-	Instances map[string]*Instance `yaml:"instances"`
-	Current   string               `yaml:"current_instance"`
+// ContextsFile is used to store local wcloud context configs
+type ContextsFile struct {
+	Contexts map[string]Context `yaml:"contexts"`
+	Current  string             `yaml:"current_context"`
 }
 
-// Available lists the names of available instances in this file.
-func (i *InstancesFile) Available() []string {
+// Available lists the names of available contexts in this file.
+func (c *ContextsFile) Available() []string {
 	var a []string
-	for name := range i.Instances {
+	for name := range c.Contexts {
 		a = append(a, name)
 	}
 	return a
 }
 
-// Instance is used to store local wcloud instance configs
-type Instance struct {
+// Context is used to store local wcloud context configs
+type Context struct {
 	ServiceToken string `yaml:"service_token"`
 	BaseURL      string `yaml:"base_url"`
 }
