@@ -6,8 +6,11 @@ import (
 	"strings"
 )
 
+// ErrUnauthorized is the error when a user is unauthorized
 var ErrUnauthorized = errors.New("unauthorized")
 
+// ErrMultipleInstances is the error when a user has access to multiple
+// instances, but we don't know which one to use.
 type ErrMultipleInstances lookupView
 
 func (e ErrMultipleInstances) Error() string {

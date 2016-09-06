@@ -60,7 +60,7 @@ func (c *Client) getInstanceID() error {
 		return ErrUnauthorized
 	}
 	if res.StatusCode != http.StatusOK {
-		return fmt.Errorf("Error initializing client: %s\n", res.StatusCode)
+		return fmt.Errorf("Error initializing client: %d\n", res.StatusCode)
 	}
 
 	defer res.Body.Close()

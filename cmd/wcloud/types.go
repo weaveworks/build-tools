@@ -52,6 +52,7 @@ type lookupView struct {
 	Instances []Instance `json:"organizations,omitempty"`
 }
 
+// Instance is a helper for data returned as part of the lookupView.
 type Instance struct {
 	ExternalID string `json:"id"`
 	Name       string `json:"name"`
