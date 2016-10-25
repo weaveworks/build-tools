@@ -136,6 +136,13 @@ lint_sh() {
         echo "${filename}: run shfmt -i 4 -w ${filename}"
     fi
 
+    # the shellcheck is completely optional.  If you don't like it
+    # don't have it installed.
+    if type shellcheck >/dev/null 2>&1; then
+        shellcheck "${filename}"
+        lint_result=$?
+    fi
+
     return $lint_result
 }
 
