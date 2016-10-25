@@ -88,11 +88,11 @@ for dir in "${TESTDIRS[@]}"; do
     if ! go test "${GO_TEST_ARGS_RUN[@]}" "$dir"; then
         fail=1
     fi
-    RUNTIME=$( ($(date +%s) - $START))
+    RUNTIME=$( ($(date +%s) - "$START"))
 
     # Report test runtime when running on circle, to help scheduler
     if [ -n "$CIRCLECI" ] && [ -z "$NO_SCHEDULER" ] && [ -x "$DIR/sched" ]; then
-        "$DIR/sched" time "$dir" $RUNTIME
+        "$DIR/sched" time "$dir" "$RUNTIME"
     fi
 done
 
