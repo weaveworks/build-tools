@@ -8,6 +8,7 @@ machine:
 
 dependencies:
   post:
+    - sudo chmod a+wr --recursive /usr/local/go/pkg
     - go clean -i net
     - go install -tags netgo std
     - mkdir -p $(dirname $SRCDIR)
