@@ -1,8 +1,12 @@
 #!/bin/bash
-# This scipt lints go files for common errors.
+# This scipt lints files for common errors.
 #
-# It runs gofmt and go vet, and optionally golint and
+# For go files, it runs gofmt and go vet, and optionally golint and
 # gocyclo, if they are installed.
+#
+# For shell files, it runs shfmt. If you don't have that installed, you can get
+# it with:
+#   go get -u github.com/mvdan/sh/cmd/shfmt
 #
 # With no arguments, it lints the current files staged
 # for git commit.  Or you can pass it explicit filenames
@@ -91,7 +95,7 @@ function lint_go {
 
 	if [ -n "$(gofmt -s -l "${filename}")" ]; then
 		lint_result=1
-		echo "${filename}: run gofmt -s -w ${filename}!"
+		echo "${filename}: run gofmt -s -w ${filename}"
 	fi
 
 	go tool vet "${filename}" || lint_result=$?
@@ -123,6 +127,18 @@ function lint_go {
 	return $lint_result
 }
 
+function lint_sh {
+	filename="$1"
+	local lint_result=0
+
+  if [ -n "$(diff <(shfmt -i 4 "${filename}") "${filename}")" ]; then
+		lint_result=1
+		echo "${filename}: run shfmt -p -i 4 -w ${filename}"
+	fi
+
+	return $lint_result
+}
+
 function lint {
 	filename="$1"
 	ext="${filename##*\.}"
@@ -140,8 +156,14 @@ function lint {
 	coverage.html) return;;
 	esac
 
+  if [[ "$(file --mime-type "${filename}" | awk '{print $2}')" = "text/x-shellscript" ]]; then
+    ext="sh"
+  fi
+
 	case "$ext" in
 		go) lint_go "${filename}" || lint_result=1
+    ;;
+    sh) lint_sh "${filename}" || lint_result=1
 		;;
 	esac
 
