@@ -16,9 +16,9 @@ N_MACHINES=${N_MACHINES:-3}
 IP_PREFIX=${IP_PREFIX:-192.168.48}
 IP_SUFFIX_BASE=${IP_SUFFIX_BASE:-10}
 
-if [ -z "$HOSTS" ] ; then
+if [ -z "$HOSTS" ]; then
     for i in $(seq 1 $N_MACHINES); do
-        IP="${IP_PREFIX}.$((${IP_SUFFIX_BASE}+$i))"
+        IP="${IP_PREFIX}.$((${IP_SUFFIX_BASE} + $i))"
         HOSTS="$HOSTS $IP"
     done
 fi
@@ -58,7 +58,7 @@ whitely() {
     colourise '1;37' "$@"
 }
 
-greyly () {
+greyly() {
     colourise '0;37' "$@"
 }
 
@@ -122,4 +122,3 @@ end_suite() {
 }
 
 WEAVE=$DIR/../weave
-
