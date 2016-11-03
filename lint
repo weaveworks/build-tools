@@ -139,8 +139,7 @@ lint_sh() {
     # the shellcheck is completely optional.  If you don't like it
     # don't have it installed.
     if type shellcheck >/dev/null 2>&1; then
-        shellcheck "${filename}"
-        lint_result=$?
+        shellcheck "${filename}" || lint_result=1
     fi
 
     return $lint_result
