@@ -91,7 +91,8 @@ assert_end() {
     #   ${tests_time:0:${#tests_time}-9} - seconds
     #   ${tests_time:${#tests_time}-9:3} - milliseconds
     if [[ -z "$INVARIANT" ]]; then
-        report_time=" in ${tests_time:0:${#tests_time}-9}.${tests_time:${#tests_time}-9:3}s"
+        idx=$((${#tests_time} - 9))
+        report_time=" in ${tests_time:0:${idx}}.${tests_time:${idx}:3}s"
     else
         report_time=
     fi
