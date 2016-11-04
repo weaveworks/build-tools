@@ -36,24 +36,17 @@ func env(key, def string) string {
 	return def
 }
 
-const cliConfigFile = "~/.wcloudconfig"
+var (
+	token   = env("SERVICE_TOKEN", "")
+	baseURL = env("BASE_URL", "https://cloud.weave.works")
+)
 
 func usage() {
-	fmt.Printf(`Usage: wcloud COMMAND ...
+	fmt.Println(`Usage:
 	deploy <image>:<version>   Deploy image to your configured env
 	list                       List recent deployments
 	config (<filename>)        Get (or set) the configured env
-	logs <deploy>              Show lots for the given deployment
-
-	Environment Variables:
-	  SERVICE_TOKEN            Set the service token to use, overrides %s
-	  BASE_URL                 Set the deploy to connect to, overrides %s
-	  INSTANCE                 Set the remote instance id, overrides %s
-`,
-		cliConfigFile,
-		cliConfigFile,
-		cliConfigFile,
-	)
+	logs <deploy>              Show lots for the given deployment`)
 }
 
 func main() {
@@ -62,23 +55,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	cliConfig, err := loadCLIConfig()
-	if err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
-	}
-	token := env("SERVICE_TOKEN", cliConfig.ServiceToken)
-	baseURL := env("BASE_URL", cliConfig.BaseURL)
-	instance := env("INSTANCE", cliConfig.Instance)
-	if baseURL == "" {
-		baseURL = "https://cloud.weave.works"
-	}
-
-	c, err := NewClient(token, baseURL, instance)
-	if err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
-	}
+	c := NewClient(token, baseURL)
 
 	switch os.Args[1] {
 	case "deploy":
@@ -98,15 +75,9 @@ func main() {
 	}
 }
 
-func newFlagSet() *flag.FlagSet {
-	flags := flag.NewFlagSet("", flag.ContinueOnError)
-	flags.Usage = usage
-	return flags
-}
-
 func deploy(c Client, args []string) {
 	var (
-		flags    = newFlagSet()
+		flags    = flag.NewFlagSet("", flag.ContinueOnError)
 		username = flags.String("u", "", "Username to report to deploy service (default with be current user)")
 		services ArrayFlags
 	)
@@ -147,7 +118,7 @@ func deploy(c Client, args []string) {
 
 func list(c Client, args []string) {
 	var (
-		flags = newFlagSet()
+		flags = flag.NewFlagSet("", flag.ContinueOnError)
 		since = flags.Duration("since", 7*24*time.Hour, "How far back to fetch results")
 	)
 	if err := flags.Parse(args); err != nil {
@@ -180,7 +151,7 @@ func list(c Client, args []string) {
 
 func events(c Client, args []string) {
 	var (
-		flags = newFlagSet()
+		flags = flag.NewFlagSet("", flag.ContinueOnError)
 		since = flags.Duration("since", 7*24*time.Hour, "How far back to fetch results")
 	)
 	if err := flags.Parse(args); err != nil {
@@ -214,7 +185,7 @@ func loadConfig(filename string) (*Config, error) {
 			return nil, err
 		}
 	}
-	return &config, err
+	return &config, nil
 }
 
 func config(c Client, args []string) {
@@ -249,21 +220,6 @@ func config(c Client, args []string) {
 
 		fmt.Println(string(buf))
 	}
-}
-
-func loadCLIConfig() (CLIConfig, error) {
-	buf, err := ioutil.ReadFile(cliConfigFile)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return CLIConfig{}, nil
-		}
-		return CLIConfig{}, err
-	}
-	var cliConfig CLIConfig
-	if err := yaml.Unmarshal(buf, &cliConfig); err != nil {
-		return CLIConfig{}, err
-	}
-	return cliConfig, err
 }
 
 func logs(c Client, args []string) {
