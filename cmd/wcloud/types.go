@@ -41,3 +41,21 @@ type NotificationConfig struct {
 	MessageTemplate      string `json:"message_template" yaml:"message_template"`
 	ApplyMessageTemplate string `json:"apply_message_template" yaml:"apply_message_template"`
 }
+
+// CLIConfig is used to store local wcloud cli configs
+type CLIConfig struct {
+	ServiceToken string `yaml:"service_token"`
+	BaseURL      string `yaml:"base_url"`
+	Instance     string `yaml:"instance,omitempty"`
+}
+
+// lookupView is returned from /api/users/lookup. Only includes the fields we care about.
+type lookupView struct {
+	Instances []Instance `json:"organizations,omitempty"`
+}
+
+// Instance is a helper for data returned as part of the lookupView.
+type Instance struct {
+	ExternalID string `json:"id"`
+	Name       string `json:"name"`
+}
