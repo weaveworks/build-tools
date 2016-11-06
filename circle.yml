@@ -14,6 +14,7 @@ dependencies:
     - mkdir -p $(dirname $SRCDIR)
     - cp -r $(pwd)/ $SRCDIR
     - |
+      cd $SRCDIR;
       go get \
         github.com/fzipp/gocyclo \
         github.com/golang/lint/golint \
