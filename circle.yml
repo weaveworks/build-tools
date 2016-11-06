@@ -14,11 +14,12 @@ dependencies:
     - mkdir -p $(dirname $SRCDIR)
     - cp -r $(pwd)/ $SRCDIR
     - |
+      cd $SRCDIR;
       go get \
         github.com/fzipp/gocyclo \
         github.com/golang/lint/golint \
         github.com/kisielk/errcheck \
-        github.com/mvdan/sh/cmd/shfmt
+        ./vendor/github.com/mvdan/sh/cmd/shfmt
 
 test:
   override:
