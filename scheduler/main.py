@@ -85,6 +85,7 @@ def schedule(test_run, shard_count, shard):
   schedule = Schedule.get_or_insert(schedule_id, shards=shards)
   return flask.json.jsonify(tests=schedule.shards[str(shard)])
 
+FIRE_RE = re.compile(r'^(?P<network>\d+)-allow-(?P<type>\d+)-(?P<build>\d+)-(?P<shard>\d+)$')
 NAME_REGEXES = [
   re.compile(r'^host(?P<index>\d+)-(?P<build>\d+)-(?P<shard>\d+)$'),
   re.compile(r'^test-(?P<build>\d+)-(?P<shard>\d+)-(?P<index>\d+)$'),
@@ -144,5 +145,15 @@ def gc_project(compute, repo, project, zone):
       stopped.append(name)
       logging.info("Stopping VM %s", name)
       compute.instances().delete(project=project, zone=zone, instance=name).execute()
+
+  # Remove firewall rules for builds that aren't running
+  firewalls = compute.firewalls.list(project=project).execute()
+  for firewall in firewalls['items']:
+    matches = FIRE_RE.match(firewall['name'])
+    if matches is None:
+      continue
+    if matches.group('build') in running:
+      continue
+    compute.firewalls.delete(project=project, firewall=firewall['name'])
 
   return
