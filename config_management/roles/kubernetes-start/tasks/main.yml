@@ -1,0 +1,29 @@
+---
+# Start Kubernetes
+
+- name: reset kubernetes via kubeadm (in case previously configured)
+  command: kubeadm reset
+
+- name: restart kubelet service (in case previously started)
+  systemd:
+    name: kubelet
+    state: restarted
+    enabled: yes
+
+- name: initialise kubernetes via kubeadm
+  command: kubeadm init
+
+- name: allow pods to be run on the master
+  command: kubectl taint nodes --all dedicated-
+
+- name: list kubernetes' pods
+  command: kubectl get pods --all-namespaces
+  changed_when: false
+  register: kubectl_get_pods
+  tags:
+    - output
+
+- name: print outpout of `kubectl get pods --all-namespaces`
+  debug: msg="{{ kubectl_get_pods.stdout_lines }}"
+  tags:
+    - output
