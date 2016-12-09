@@ -145,6 +145,18 @@ lint_sh() {
     return $lint_result
 }
 
+lint_tf() {
+    filename="$1"
+    local lint_result=0
+
+    if [ -n "$(diff <(hclfmt "${filename}") "${filename}")" ]; then
+        lint_result=1
+        echo "${filename}: run hclfmt -w ${filename}"
+    fi
+
+    return $lint_result
+}
+
 lint() {
     filename="$1"
     ext="${filename##*\.}"
@@ -168,6 +180,7 @@ lint() {
     case "$ext" in
         go) lint_go "${filename}" || lint_result=1 ;;
         sh) lint_sh "${filename}" || lint_result=1 ;;
+        tf) lint_tf "${filename}" || lint_result=1 ;;
     esac
 
     if [ -z "$IGNORE_TEST_PACKAGES" ]; then
