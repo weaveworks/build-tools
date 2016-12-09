@@ -8,39 +8,38 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 	"regexp"
-	"runtime/pprof"
 	"strings"
 
 	"github.com/mvdan/sh/syntax"
 )
 
 var (
-	write      = flag.Bool("w", false, "write result to file instead of stdout")
-	list       = flag.Bool("l", false, "list files whose formatting differs from shfmt's")
-	indent     = flag.Int("i", 0, "indent: 0 for tabs (default), >0 for number of spaces")
-	posix      = flag.Bool("p", false, "parse POSIX shell code instead of bash")
-	cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
+	write       = flag.Bool("w", false, "write result to file instead of stdout")
+	list        = flag.Bool("l", false, "list files whose formatting differs from shfmt's")
+	indent      = flag.Int("i", 0, "indent: 0 for tabs (default), >0 for number of spaces")
+	posix       = flag.Bool("p", false, "parse POSIX shell code instead of bash")
+	showVersion = flag.Bool("version", false, "show version and exit")
 
 	parseMode         syntax.ParseMode
 	printConfig       syntax.PrintConfig
 	readBuf, writeBuf bytes.Buffer
 
+	copyBuf = make([]byte, 32*1024)
+
 	out io.Writer
+
+	version = "v0.6.0"
 )
 
 func main() {
 	flag.Parse()
-	if *cpuprofile != "" {
-		f, err := os.Create(*cpuprofile)
-		if err != nil {
-			log.Fatal(err)
-		}
-		pprof.StartCPUProfile(f)
-		defer pprof.StopCPUProfile()
+
+	if *showVersion {
+		fmt.Println(version)
+		return
 	}
 
 	out = os.Stdout
@@ -73,12 +72,7 @@ func formatStdin() error {
 	if *write || *list {
 		return fmt.Errorf("-w and -l can only be used on files")
 	}
-	readBuf.Reset()
-	if _, err := io.Copy(&readBuf, os.Stdin); err != nil {
-		return err
-	}
-	src := readBuf.Bytes()
-	prog, err := syntax.Parse(src, "", parseMode)
+	prog, err := syntax.Parse(os.Stdin, "", parseMode)
 	if err != nil {
 		return err
 	}
@@ -87,7 +81,7 @@ func formatStdin() error {
 
 var (
 	shellFile    = regexp.MustCompile(`\.(sh|bash)$`)
-	validShebang = regexp.MustCompile(`^#!\s?/(usr/)?bin/(env *)?(sh|bash)`)
+	validShebang = regexp.MustCompile(`^#!\s?/(usr/)?bin/(env\s+)?(sh|bash)`)
 	vcsDir       = regexp.MustCompile(`^\.(git|svn|hg)$`)
 )
 
@@ -166,14 +160,21 @@ func formatPath(path string, checkShebang bool) error {
 	}
 	defer f.Close()
 	readBuf.Reset()
-	if _, err := io.Copy(&readBuf, f); err != nil {
+	if checkShebang {
+		n, err := f.Read(copyBuf[:32])
+		if err != nil {
+			return err
+		}
+		if !validShebang.Match(copyBuf[:n]) {
+			return nil
+		}
+		readBuf.Write(copyBuf[:n])
+	}
+	if _, err := io.CopyBuffer(&readBuf, f, copyBuf); err != nil {
 		return err
 	}
 	src := readBuf.Bytes()
-	if checkShebang && !validShebang.Match(src[:32]) {
-		return nil
-	}
-	prog, err := syntax.Parse(src, path, parseMode)
+	prog, err := syntax.Parse(&readBuf, path, parseMode)
 	if err != nil {
 		return err
 	}
@@ -182,13 +183,18 @@ func formatPath(path string, checkShebang bool) error {
 	res := writeBuf.Bytes()
 	if !bytes.Equal(src, res) {
 		if *list {
-			fmt.Fprintln(out, path)
+			if _, err := fmt.Fprintln(out, path); err != nil {
+				return err
+			}
 		}
 		if *write {
 			if err := empty(f); err != nil {
 				return err
 			}
 			if _, err := f.Write(res); err != nil {
+				return err
+			}
+			if err := f.Close(); err != nil {
 				return err
 			}
 		}

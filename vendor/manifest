@@ -2,11 +2,21 @@
 	"version": 0,
 	"dependencies": [
 		{
-			"importpath": "github.com/mvdan/sh",
+			"importpath": "github.com/mvdan/sh/cmd/shfmt",
 			"repository": "https://github.com/mvdan/sh",
 			"vcs": "git",
-			"revision": "0a4761ee498179b93fe0efcd37758320c6ec73cd",
-			"branch": "HEAD",
+			"revision": "d246ca6f572096b994fa8ed497398fc8d6b78ac0",
+			"branch": "master",
+			"path": "/cmd/shfmt",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/mvdan/sh/syntax",
+			"repository": "https://github.com/mvdan/sh",
+			"vcs": "git",
+			"revision": "d246ca6f572096b994fa8ed497398fc8d6b78ac0",
+			"branch": "master",
+			"path": "syntax",
 			"notests": true
 		}
 	]
