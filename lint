@@ -41,7 +41,7 @@ while true; do
 done
 
 spell_check() {
-    filename="$1"
+    local filename="$1"
     local lint_result=0
 
     # we don't want to spell check tar balls, binaries, Makefile and json files
@@ -66,8 +66,8 @@ spell_check() {
 }
 
 test_mismatch() {
-    filename="$1"
-    package=$(grep '^package ' "$filename" | awk '{print $2}')
+    local filename="$1"
+    local package=$(grep '^package ' "$filename" | awk '{print $2}')
     local lint_result=0
 
     if [[ $package == "main" ]]; then
@@ -90,7 +90,7 @@ test_mismatch() {
 }
 
 lint_go() {
-    filename="$1"
+    local filename="$1"
     local lint_result=0
 
     if [ -n "$(gofmt -s -l "${filename}")" ]; then
@@ -128,10 +128,10 @@ lint_go() {
 }
 
 lint_sh() {
-    filename="$1"
+    local filename="$1"
     local lint_result=0
 
-    if [ -n "$(diff <(shfmt -i 4 "${filename}") "${filename}")" ]; then
+    if ! diff <(shfmt -i 4 "${filename}") "${filename}" >/dev/null; then
         lint_result=1
         echo "${filename}: run shfmt -i 4 -w ${filename}"
     fi
@@ -146,10 +146,10 @@ lint_sh() {
 }
 
 lint_tf() {
-    filename="$1"
+    local filename="$1"
     local lint_result=0
 
-    if [ -n "$(diff <(hclfmt "${filename}") "${filename}")" ]; then
+    if ! diff <(hclfmt "${filename}") "${filename}" >/dev/null; then
         lint_result=1
         echo "${filename}: run hclfmt -w ${filename}"
     fi
