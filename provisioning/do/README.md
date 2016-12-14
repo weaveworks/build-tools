@@ -43,6 +43,36 @@ $ terraform <command> \
 -var 'do_public_key_id=<ID of your SSH public key>'
 ```
 
+### Bash aliases
+
+You can set the above variables temporarily in your current shell, permanently in your `~/.bashrc` file, or define aliases to activate/deactivate them at will with one single command by adding the below to your `~/.bashrc` file:
+
+```
+function _do_on() {
+  export DIGITALOCEAN_TOKEN_NAME="<your_token_name>"        # Replace with appropriate value.
+  export DIGITALOCEAN_TOKEN=<your_token>                    # Replace with appropriate value.
+  export DIGITALOCEAN_SSH_KEY_NAME="<your_ssh_key_name>"    # Replace with appropriate value.
+  export TF_VAR_do_private_key_path="$HOME/.ssh/id_rsa"     # Replace with appropriate value.
+  export TF_VAR_do_public_key_path="$HOME/.ssh/id_rsa.pub"  # Replace with appropriate value.
+  export TF_VAR_do_public_key_id=<your_ssh_key_id>          # Replace with appropriate value.
+}
+alias _do_on='_do_on'
+function _do_off() {
+  unset DIGITALOCEAN_TOKEN_NAME
+  unset DIGITALOCEAN_TOKEN
+  unset DIGITALOCEAN_SSH_KEY_NAME
+  unset TF_VAR_do_private_key_path
+  unset TF_VAR_do_public_key_path
+  unset TF_VAR_do_public_key_id
+}
+alias _do_off='_do_off'
+```
+
+N.B.: 
+
+* sourcing `../setup.sh` defines aliases called `do_on` and `do_off`, similarly to the above (however, notice no `_` in front of the name, as opposed to the ones above);
+* `../setup.sh`'s `do_on` alias needs the `SECRET_KEY` environment variable to be set in order to decrypt sensitive information.
+
 ## Usage
 
 * Create the machine: `terraform apply`

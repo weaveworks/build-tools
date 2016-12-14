@@ -74,6 +74,33 @@ export TF_VAR_gcp_project=weave-net-tests
 $ terraform <command> -var 'gcp_project=weave-net-tests'
 ```
 
+### Bash aliases
+
+You can set the above variables temporarily in your current shell, permanently in your `~/.bashrc` file, or define aliases to activate/deactivate them at will with one single command by adding the below to your `~/.bashrc` file:
+
+```
+function _gcp_on() {
+  export GOOGLE_CREDENTIALS_FILE="<path/to/your/json/credentials/file.json"
+  export GOOGLE_CREDENTIALS=$(cat "$GOOGLE_CREDENTIALS_FILE")
+  export TF_VAR_gcp_private_key_path="$HOME/.ssh/id_rsa"     # Replace with appropriate value.
+  export TF_VAR_gcp_public_key_path="$HOME/.ssh/id_rsa.pub"  # Replace with appropriate value.
+  export TF_VAR_gcp_username=$(cat "$TF_VAR_gcp_public_key_path" | cut -d' ' -f3 | cut -d'@' -f1)
+}
+alias _gcp_on='_gcp_on'
+function _gcp_off() {
+  unset GOOGLE_CREDENTIALS_FILE
+  unset GOOGLE_CREDENTIALS
+  unset TF_VAR_gcp_private_key_path
+  unset TF_VAR_gcp_public_key_path
+  unset TF_VAR_gcp_username
+}
+```
+
+N.B.: 
+
+* sourcing `../setup.sh` defines aliases called `gcp_on` and `gcp_off`, similarly to the above (however, notice no `_` in front of the name, as opposed to the ones above);
+* `../setup.sh`'s `gcp_on` alias needs the `SECRET_KEY` environment variable to be set in order to decrypt sensitive information.
+
 ## Usage
 
 * Create the machine: `terraform apply`

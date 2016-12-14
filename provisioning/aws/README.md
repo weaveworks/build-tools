@@ -38,6 +38,32 @@ export TF_VAR_client_ip=$(curl -s -X GET http://checkip.amazonaws.com/)
 $ terraform <command> -var 'client_ip=$(curl -s -X GET http://checkip.amazonaws.com/)'
 ```
 
+### Bash aliases
+
+You can set the above variables temporarily in your current shell, permanently in your `~/.bashrc` file, or define aliases to activate/deactivate them at will with one single command by adding the below to your `~/.bashrc` file:
+
+```
+function _aws_on() {
+  export AWS_ACCESS_KEY_ID="<your_access_key_id>"          # Replace with appropriate value.
+  export AWS_SECRET_ACCESS_KEY="<your_secret_access_key>"  # Replace with appropriate value.
+  export TF_VAR_aws_public_key_name="<your_ssh_key_name>"  # Replace with appropriate value.
+  export TF_VAR_aws_private_key_path="$HOME/.ssh/id_rsa"   # Replace with appropriate value.
+}
+alias _aws_on='_aws_on'
+function _aws_off() {
+  unset AWS_ACCESS_KEY_ID
+  unset AWS_SECRET_ACCESS_KEY
+  unset TF_VAR_aws_public_key_name
+  unset TF_VAR_aws_private_key_path
+}
+alias _aws_off='_aws_off'
+```
+
+N.B.: 
+
+* sourcing `../setup.sh` defines aliases called `aws_on` and `aws_off`, similarly to the above (however, notice no `_` in front of the name, as opposed to the ones above);
+* `../setup.sh`'s `aws_on` alias needs the `SECRET_KEY` environment variable to be set in order to decrypt sensitive information.
+
 ## Usage
 
 * Create the machine: `terraform apply`
