@@ -41,3 +41,24 @@ type NotificationConfig struct {
 	MessageTemplate      string `json:"message_template" yaml:"message_template"`
 	ApplyMessageTemplate string `json:"apply_message_template" yaml:"apply_message_template"`
 }
+
+// ContextsFile is used to store local wcloud context configs
+type ContextsFile struct {
+	Contexts map[string]Context `yaml:"contexts"`
+	Current  string             `yaml:"current_context"`
+}
+
+// Available lists the names of available contexts in this file.
+func (c *ContextsFile) Available() []string {
+	var a []string
+	for name := range c.Contexts {
+		a = append(a, name)
+	}
+	return a
+}
+
+// Context is used to store local wcloud context configs
+type Context struct {
+	ServiceToken string `yaml:"service_token"`
+	BaseURL      string `yaml:"base_url"`
+}
