@@ -173,7 +173,7 @@ lint() {
         coverage.html) return ;;
     esac
 
-    if [[ "$(file --mime-type "${filename}" | awk '{print $2}')" = "text/x-shellscript" ]]; then
+    if [[ "$(file --mime-type "${filename}" | awk '{print $2}')" == "text/x-shellscript" ]]; then
         ext="sh"
     fi
 
