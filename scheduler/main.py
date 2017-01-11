@@ -85,7 +85,7 @@ def schedule(test_run, shard_count, shard):
   schedule = Schedule.get_or_insert(schedule_id, shards=shards)
   return flask.json.jsonify(tests=schedule.shards[str(shard)])
 
-FIRE_RE = re.compile(r'^(?P<network>\d+)-allow-(?P<type>\d+)-(?P<build>\d+)-(?P<shard>\d+)$')
+FIRE_RE = re.compile(r'^(?P<network>\w+)-allow-(?P<type>\w+)-(?P<build>\d+)-(?P<shard>\d+)$')
 NAME_REGEXES = [
   re.compile(r'^host(?P<index>\d+)-(?P<build>\d+)-(?P<shard>\d+)$'),
   re.compile(r'^test-(?P<build>\d+)-(?P<shard>\d+)-(?P<index>\d+)$'),
