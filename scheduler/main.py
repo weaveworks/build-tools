@@ -85,9 +85,19 @@ def schedule(test_run, shard_count, shard):
   schedule = Schedule.get_or_insert(schedule_id, shards=shards)
   return flask.json.jsonify(tests=schedule.shards[str(shard)])
 
-NAME_RE = re.compile(r'^host(?P<index>\d+)-(?P<build>\d+)-(?P<shard>\d+)$')
+NAME_REGEXES = [
+  re.compile(r'^host(?P<index>\d+)-(?P<build>\d+)-(?P<shard>\d+)$'),
+  re.compile(r'^test-(?P<build>\d+)-(?P<shard>\d+)-(?P<index>\d+)$'),
+]
+
+def _matches_any_regex(name):
+  for regex in NAME_REGEXES:
+    matches = regex.match(name)
+    if matches:
+      return matches
 
 PROJECTS = [
+  ('weaveworks/weave', 'weave-net-tests', 'us-central1-a'),
   ('weaveworks/weave', 'positive-cocoa-90213', 'us-central1-a'),
   ('weaveworks/scope', 'scope-integration-tests', 'us-central1-a'),
 ]
@@ -111,8 +121,8 @@ def gc_project(compute, repo, project, zone):
 
   host_by_build = collections.defaultdict(list)
   for instance in instances['items']:
-    matches = NAME_RE.match(instance['name'])
-    if matches is None:
+    matches = _matches_any_regex(instance['name'])
+    if not matches:
       continue
     host_by_build[int(matches.group('build'))].append(instance['name'])
   logging.info("Running VMs by build: %r", host_by_build)
