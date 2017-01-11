@@ -85,14 +85,17 @@ def schedule(test_run, shard_count, shard):
   schedule = Schedule.get_or_insert(schedule_id, shards=shards)
   return flask.json.jsonify(tests=schedule.shards[str(shard)])
 
-FIRE_RE = re.compile(r'^(?P<network>\w+)-allow-(?P<type>\w+)-(?P<build>\d+)-(?P<shard>\d+)$')
+FIREWALL_REGEXES = [
+  re.compile(r'^(?P<network>\w+)-allow-(?P<type>\w+)-(?P<build>\d+)-(?P<shard>\d+)$'),
+  re.compile(r'^(?P<network>\w+)-(?P<build>\d+)-(?P<shard>\d+)-allow-(?P<type>[\w\-]+)$'),
+]
 NAME_REGEXES = [
   re.compile(r'^host(?P<index>\d+)-(?P<build>\d+)-(?P<shard>\d+)$'),
   re.compile(r'^test-(?P<build>\d+)-(?P<shard>\d+)-(?P<index>\d+)$'),
 ]
 
-def _matches_any_regex(name):
-  for regex in NAME_REGEXES:
+def _matches_any_regex(name, regexes):
+  for regex in regexes:
     matches = regex.match(name)
     if matches:
       return matches
@@ -135,7 +138,7 @@ def _get_running_builds(repo):
 def _get_hosts_by_build(instances):
   host_by_build = collections.defaultdict(list)
   for instance in instances['items']:
-    matches = _matches_any_regex(instance['name'])
+    matches = _matches_any_regex(instance['name'], NAME_REGEXES)
     if not matches:
       continue
     host_by_build[int(matches.group('build'))].append(instance['name'])
@@ -159,10 +162,13 @@ def _gc_compute_engine_instances(compute, project, zone, running):
 
 def _gc_firewall_rules(compute, project, running):
   firewalls = compute.firewalls().list(project=project).execute()
+  if 'items' not in firewalls:
+    return
   for firewall in firewalls['items']:
-    matches = FIRE_RE.match(firewall['name'])
-    if matches is None:
+    matches = _matches_any_regex(firewall['name'], FIREWALL_REGEXES)
+    if not matches:
       continue
     if matches.group('build') in running:
       continue
+    logging.info("Deleting firewall rule %s", firewall['name'])
     compute.firewalls().delete(project=project, firewall=firewall['name']).execute()
