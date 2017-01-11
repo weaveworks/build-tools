@@ -116,10 +116,23 @@ def gc():
 
 def gc_project(compute, repo, project, zone):
   logging.info("GCing %s, %s, %s", repo, project, zone)
-  instances = compute.instances().list(project=project, zone=zone).execute()
-  if 'items' not in instances:
-    return
+  # Get list of builds, filter down to running builds:
+  running = _get_running_builds(repo)
+  # Stop VMs for builds that aren't running:
+  _gc_compute_engine_instances(compute, project, zone, running)
+  # Remove firewall rules for builds that aren't running:
+  _gc_firewall_rules(compute, project, running)
 
+def _get_running_builds(repo):
+  result = urlfetch.fetch('https://circleci.com/api/v1/project/%s' % repo,
+    headers={'Accept': 'application/json'})
+  assert result.status_code == 200
+  builds = json.loads(result.content)
+  running = {build['build_num'] for build in builds if not build.get('stop_time')}
+  logging.info("Runnings builds: %r", running)
+  return running
+
+def _get_hosts_by_build(instances):
   host_by_build = collections.defaultdict(list)
   for instance in instances['items']:
     matches = _matches_any_regex(instance['name'])
@@ -127,16 +140,13 @@ def gc_project(compute, repo, project, zone):
       continue
     host_by_build[int(matches.group('build'))].append(instance['name'])
   logging.info("Running VMs by build: %r", host_by_build)
+  return host_by_build
 
-  # Get list of builds, filter down to runnning builds
-  result = urlfetch.fetch('https://circleci.com/api/v1/project/%s' % repo,
-    headers={'Accept': 'application/json'})
-  assert result.status_code == 200
-  builds = json.loads(result.content)
-  running = {build['build_num'] for build in builds if not build.get('stop_time')}
-  logging.info("Runnings builds: %r", running)
-
-  # Stop VMs for builds that aren't running
+def _gc_compute_engine_instances(compute, project, zone, running):
+  instances = compute.instances().list(project=project, zone=zone).execute()
+  if 'items' not in instances:
+    return
+  host_by_build = _get_hosts_by_build(instances)
   stopped = []
   for build, names in host_by_build.iteritems():
     if build in running:
@@ -145,8 +155,9 @@ def gc_project(compute, repo, project, zone):
       stopped.append(name)
       logging.info("Stopping VM %s", name)
       compute.instances().delete(project=project, zone=zone, instance=name).execute()
+  return stopped
 
-  # Remove firewall rules for builds that aren't running
+def _gc_firewall_rules(compute, project, running):
   firewalls = compute.firewalls.list(project=project).execute()
   for firewall in firewalls['items']:
     matches = FIRE_RE.match(firewall['name'])
@@ -155,5 +166,3 @@ def gc_project(compute, repo, project, zone):
     if matches.group('build') in running:
       continue
     compute.firewalls.delete(project=project, firewall=firewall['name'])
-
-  return
