@@ -3,12 +3,12 @@
 set -e
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-GO_TEST_ARGS=(-tags netgo -cpu 4 -timeout 8m)
 SLOW=
-NO_GO_GET=
+NO_GO_GET=true
+TAGS=
 
 usage() {
-    echo "$0 [-slow] [-in-container foo]"
+    echo "$0 [-slow] [-in-container foo] [-netgo] [-(no-)go-get]"
 }
 
 while [ $# -gt 0 ]; do
@@ -21,12 +21,22 @@ while [ $# -gt 0 ]; do
             NO_GO_GET=true
             shift 1
             ;;
+        "-go-get")
+            NO_GO_GET=
+            shift 1
+            ;;
+        "-netgo")
+            TAGS="-tags netgo"
+            shift 1
+            ;;
         *)
             usage
             exit 2
             ;;
     esac
 done
+
+GO_TEST_ARGS=($TAGS -cpu 4 -timeout 8m)
 
 if [ -n "$SLOW" ] || [ -n "$CIRCLECI" ]; then
     SLOW=true
@@ -71,7 +81,7 @@ go test -i "${GO_TEST_ARGS[@]}" "${TESTDIRS[@]}"
 
 for dir in "${TESTDIRS[@]}"; do
     if [ -z "$NO_GO_GET" ]; then
-        go get -t -tags netgo "$dir"
+        go get -t $TAGS "$dir"
     fi
 
     GO_TEST_ARGS_RUN=("${GO_TEST_ARGS[@]}")
