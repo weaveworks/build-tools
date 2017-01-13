@@ -158,11 +158,11 @@ def _gc_compute_engine_instances(compute, project, zone, running):
   return stopped
 
 def _gc_firewall_rules(compute, project, running):
-  firewalls = compute.firewalls.list(project=project).execute()
+  firewalls = compute.firewalls().list(project=project).execute()
   for firewall in firewalls['items']:
     matches = FIRE_RE.match(firewall['name'])
     if matches is None:
       continue
     if matches.group('build') in running:
       continue
-    compute.firewalls.delete(project=project, firewall=firewall['name'])
+    compute.firewalls().delete(project=project, firewall=firewall['name']).execute()
