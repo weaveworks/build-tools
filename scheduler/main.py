@@ -101,9 +101,9 @@ def _matches_any_regex(name, regexes):
       return matches
 
 PROJECTS = [
-  ('weaveworks/weave', 'weave-net-tests', 'us-central1-a'),
-  ('weaveworks/weave', 'positive-cocoa-90213', 'us-central1-a'),
-  ('weaveworks/scope', 'scope-integration-tests', 'us-central1-a'),
+  ('weaveworks/weave', 'weave-net-tests',         'us-central1-a', True),
+  ('weaveworks/weave', 'positive-cocoa-90213',    'us-central1-a', True),
+  ('weaveworks/scope', 'scope-integration-tests', 'us-central1-a', False),
 ]
 
 @app.route('/tasks/gc')
@@ -112,19 +112,20 @@ def gc():
   credentials = GoogleCredentials.get_application_default()
   compute = discovery.build('compute', 'v1', credentials=credentials)
 
-  for repo, project, zone in PROJECTS:
-    gc_project(compute, repo, project, zone)
+  for repo, project, zone, gc_fw in PROJECTS:
+    gc_project(compute, repo, project, zone, gc_fw)
 
   return "Done"
 
-def gc_project(compute, repo, project, zone):
+def gc_project(compute, repo, project, zone, gc_fw):
   logging.info("GCing %s, %s, %s", repo, project, zone)
   # Get list of builds, filter down to running builds:
   running = _get_running_builds(repo)
   # Stop VMs for builds that aren't running:
   _gc_compute_engine_instances(compute, project, zone, running)
   # Remove firewall rules for builds that aren't running:
-  _gc_firewall_rules(compute, project, running)
+  if gc_fw:
+    _gc_firewall_rules(compute, project, running)
 
 def _get_running_builds(repo):
   result = urlfetch.fetch('https://circleci.com/api/v1/project/%s' % repo,
