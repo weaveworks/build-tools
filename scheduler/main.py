@@ -169,7 +169,7 @@ def _gc_firewall_rules(compute, project, running):
     matches = _matches_any_regex(firewall['name'], FIREWALL_REGEXES)
     if not matches:
       continue
-    if matches.group('build') in running:
+    if int(matches.group('build')) in running:
       continue
     logging.info("Deleting firewall rule %s", firewall['name'])
     compute.firewalls().delete(project=project, firewall=firewall['name']).execute()
