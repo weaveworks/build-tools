@@ -43,3 +43,15 @@ output "public_etc_hosts" {
 output "private_key_path" {
   value = "${var.gcp_private_key_path}"
 }
+
+output "instances_names" {
+  value = ["${google_compute_instance.tf_test_vm.*.name}"]
+}
+
+output "image" {
+  value = "${var.gcp_image}"
+}
+
+output "zone" {
+  value = "${var.gcp_zone}"
+}
