@@ -25,6 +25,9 @@ while true; do
             IGNORE_LINT_COMMENT=1
             shift 1
             ;;
+        -notestpackage)
+	    # NOOP, still accepted for backwards compatibility
+            shift 1
         -ignorespelling)
             IGNORE_SPELLINGS="$2,$IGNORE_SPELLINGS"
             shift 2
