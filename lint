@@ -26,7 +26,7 @@ while true; do
             shift 1
             ;;
         -notestpackage)
-	    # NOOP, still accepted for backwards compatibility
+            # NOOP, still accepted for backwards compatibility
             shift 1
         -ignorespelling)
             IGNORE_SPELLINGS="$2,$IGNORE_SPELLINGS"
