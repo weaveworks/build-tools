@@ -142,10 +142,11 @@ lint() {
         return
     fi
 
-    # Don't lint static.go
+    # Don't lint specific files
     case "$(basename "${filename}")" in
         static.go) return ;;
         coverage.html) return ;;
+        *.pb.go) return ;;
     esac
 
     if [[ "$(file --mime-type "${filename}" | awk '{print $2}')" == "text/x-shellscript" ]]; then
