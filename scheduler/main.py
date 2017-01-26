@@ -94,12 +94,6 @@ NAME_REGEXES = [
   re.compile(r'^test-(?P<build>\d+)-(?P<shard>\d+)-(?P<index>\d+)$'),
 ]
 
-def _matches_any_regex(name, regexes):
-  for regex in regexes:
-    matches = regex.match(name)
-    if matches:
-      return matches
-
 PROJECTS = [
   ('weaveworks/weave', 'weave-net-tests',         'us-central1-a', True),
   ('weaveworks/weave', 'positive-cocoa-90213',    'us-central1-a', True),
@@ -139,7 +133,7 @@ def _get_running_builds(repo):
 def _get_hosts_by_build(instances):
   host_by_build = collections.defaultdict(list)
   for instance in instances['items']:
-    matches = _matches_any_regex(instance['name'], NAME_REGEXES)
+    matches = any(regex.match(instance['name']) for regex in NAME_REGEXES)
     if not matches:
       continue
     host_by_build[int(matches.group('build'))].append(instance['name'])
@@ -166,7 +160,7 @@ def _gc_firewall_rules(compute, project, running):
   if 'items' not in firewalls:
     return
   for firewall in firewalls['items']:
-    matches = _matches_any_regex(firewall['name'], FIREWALL_REGEXES)
+    matches = any(regex.match(firewall['name']) for regex in FIREWALL_REGEXES)
     if not matches:
       continue
     if int(matches.group('build')) in running:
