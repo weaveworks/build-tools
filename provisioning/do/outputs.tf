@@ -43,6 +43,15 @@ output "public_etc_hosts" {
   )}"
 }
 
+output "ansible_inventory" {
+  value = "${format("[all]\n%s", join("\n",
+    "${formatlist("%v private_ip=%v",
+      digitalocean_droplet.tf_test_vm.*.ipv4_address,
+      digitalocean_droplet.tf_test_vm.*.ipv4_address
+    )}"
+  ))}"
+}
+
 output "private_key_path" {
   value = "${var.do_private_key_path}"
 }

@@ -40,6 +40,15 @@ output "public_etc_hosts" {
   )}"
 }
 
+output "ansible_inventory" {
+  value = "${format("[all]\n%s", join("\n",
+    "${formatlist("%v private_ip=%v",
+      aws_instance.tf_test_vm.*.public_ip,
+      aws_instance.tf_test_vm.*.private_ip,
+    )}"
+  ))}"
+}
+
 output "private_key_path" {
   value = "${var.aws_private_key_path}"
 }

@@ -49,4 +49,7 @@ Source `setup.sh`, set the `SECRET_KEY` environment variable, and depending on t
 
 Indeed, the functions defined in `setup.sh` are also exported as aliases, so you can call them from your shell directly.
 
-Another alias, `tf_ssh` is also defined to ease SSH-ing into the virtual machines, reading the username and IP address to use from Terraform, as well as setting default SSH options.
+Other aliases are also defined, in order to make your life easier:
+
+* `tf_ssh`: to ease SSH-ing into the virtual machines, reading the username and IP address to use from Terraform, as well as setting default SSH options.
+* `tf_ansi`: to ease applying an Ansible playbook to a set of virtual machines, dynamically creating the inventory, as well as setting default SSH options.
