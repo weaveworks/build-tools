@@ -292,3 +292,27 @@ function aws_off() {
     unset TF_VAR_client_ip
 }
 alias aws_off='aws_off'
+
+function tf_ssh_usage() {
+    cat >&2 <<-EOF
+ERROR: $1
+
+Usage:
+  $ tf_ssh <host ID (1-based)> [OPTION]...
+Examples:
+  $ tf_ssh 1
+  $ tf_ssh 1 -o LogLevel VERBOSE
+Available machines:
+EOF
+    cat -n >&2 <<<"$(terraform output public_etc_hosts)"
+}
+
+# shellcheck disable=SC2155
+function tf_ssh() {
+    [ -z "$1" ] && tf_ssh_usage "No host ID provided." && return 1
+    local ip="$(sed "$1q;d" <<<"$(terraform output public_etc_hosts)" | cut -d ' ' -f 1)"
+    shift # Drop the first argument, corresponding to the machine ID, to allow passing other arguments to SSH using "$@" -- see below.
+    [ -z "$ip" ] && tf_ssh_usage "Invalid host ID provided." && return 1
+    ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "$@" "$(terraform output username)"@"$ip"
+}
+alias tf_ssh='tf_ssh'

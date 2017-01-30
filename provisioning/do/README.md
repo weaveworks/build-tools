@@ -84,6 +84,13 @@ N.B.:
 $ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no `terraform output username`@`terraform output public_ips`
 ```
 
+or
+
+```
+source ../setup.sh
+tf_ssh 1  # Or the nth machine, if multiple VMs are provisioned.
+``` 
+
 ## Resources
 
 * [https://www.terraform.io/docs/providers/do/](https://www.terraform.io/docs/providers/do/)

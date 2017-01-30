@@ -76,6 +76,13 @@ $ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no `terraform out
 # N.B.: the default username will differ depending on the AMI/OS you installed, e.g. ubuntu for Ubuntu, ec2-user for Red Hat, etc.
 ```
 
+or
+
+```
+source ../setup.sh
+tf_ssh 1  # Or the nth machine, if multiple VMs are provisioned.
+``` 
+
 ## Resources
 
 * [https://www.terraform.io/docs/providers/aws/](https://www.terraform.io/docs/providers/aws/)

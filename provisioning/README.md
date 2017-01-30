@@ -48,3 +48,5 @@ Source `setup.sh`, set the `SECRET_KEY` environment variable, and depending on t
 * `aws_on` / `aws_off`
 
 Indeed, the functions defined in `setup.sh` are also exported as aliases, so you can call them from your shell directly.
+
+Another alias, `tf_ssh` is also defined to ease SSH-ing into the virtual machines, reading the username and IP address to use from Terraform, as well as setting default SSH options.
