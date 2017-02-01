@@ -52,7 +52,7 @@ resource "google_compute_instance" "tf_test_vm" {
   }
 }
 
-resource "google_compute_firewall" "default" {
+resource "google_compute_firewall" "fw-allow-docker-and-weave" {
   name        = "${var.name}-allow-docker-and-weave"
   network     = "${var.gcp_network}"
   target_tags = ["${var.name}"]
@@ -63,4 +63,17 @@ resource "google_compute_firewall" "default" {
   }
 
   source_ranges = ["${var.client_ip}"]
+}
+
+# Required for FastDP crypto in Weave Net:
+resource "google_compute_firewall" "fw-allow-esp" {
+  name        = "${var.name}-allow-esp"
+  network     = "${var.gcp_network}"
+  target_tags = ["${var.name}"]
+
+  allow {
+    protocol = "esp"
+  }
+
+  source_ranges = ["${var.gcp_network_global_cidr}"]
 }

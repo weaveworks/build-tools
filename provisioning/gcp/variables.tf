@@ -64,3 +64,8 @@ variable "gcp_network" {
   description = "Google Cloud Platform's selected network"
   default     = "test"
 }
+
+variable "gcp_network_global_cidr" {
+  description = "CIDR covering all regions for the selected Google Cloud Platform network"
+  default     = "10.128.0.0/9"
+}
