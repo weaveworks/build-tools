@@ -10,7 +10,7 @@
   become_user: root
   
   pre_tasks:
-    - include: setup_ansible_dependencies.yml
+    - include: library/setup_ansible_dependencies.yml
 
   roles:
     - docker-from-tarball
