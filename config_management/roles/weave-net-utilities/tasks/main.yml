@@ -18,15 +18,31 @@
 - name: install nsenter (used by the weave script)
   command: docker run --rm -v /usr/local/bin:/target jpetazzo/nsenter
 
+- name: install pip (for docker-py)
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: 
+    - python-pip
+
+- name: install docker-py (for docker_image)
+  pip:
+    name: docker-py
+    state: present
+
 - name: docker pull images used by tests
-  command: docker pull {{ item }}
+  docker_image:
+    name: '{{ item }}'
+    state: present
   with_items: 
     - alpine
     - aanand/docker-dnsutils
     - weaveworks/hello-world
 
 - name: docker pull images used by k8s tests
-  command: docker pull {{ item }}
+  docker_image:
+    name: '{{ item }}'
+    state: present
   with_items:
     - gcr.io/google_containers/etcd-amd64:{{ etcd_container_version }}
     - gcr.io/google_containers/kube-apiserver-amd64:v{{ kubernetes_version }}
@@ -35,16 +51,3 @@
     - gcr.io/google_containers/kube-scheduler-amd64:v{{ kubernetes_version }}
     - gcr.io/google_containers/kube-discovery-amd64:{{ kube_discovery_container_version }}
     - gcr.io/google_containers/pause-amd64:{{ pause_container_version }}
-
-- name: check if kubelet service exists
-  stat:
-    path: /etc/init.d/kubelet
-  register: kubelet
-
-# avoids having weave-net and weave-kube conflict in some test cases (e.g. 130_expose_test.sh)
-- name: stop kubelet service 
-  systemd:
-    name: kubelet
-    state: stopped
-    enabled: no
-  when: kubelet.stat.exists

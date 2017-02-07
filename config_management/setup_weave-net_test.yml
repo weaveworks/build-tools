@@ -15,4 +15,5 @@
   roles:
     - docker-from-get.docker.com
     - kubernetes-install
-    - weave-net-tests
+    - weave-net-utilities
+    - kubelet-stop

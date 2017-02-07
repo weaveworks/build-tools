@@ -18,7 +18,9 @@
     - include: library/setup_ansible_dependencies.yml
 
   roles:
-    - docker-from-docker-repo
-    - kubernetes
+    - docker-from-get.docker.com
+    - kubernetes-install
+    - weave-net-utilities
+    - kubelet-stop
     - kubernetes-start
     - weave-kube
