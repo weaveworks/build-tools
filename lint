@@ -6,7 +6,7 @@
 #
 # For shell files, it runs shfmt. If you don't have that installed, you can get
 # it with:
-#   go get -u github.com/mvdan/sh/cmd/shfmt
+#   go get -u gopkg.in/mvdan/sh.v1/cmd/shfmt
 #
 # With no arguments, it lints the current files staged
 # for git commit.  Or you can pass it explicit filenames
