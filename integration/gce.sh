@@ -41,7 +41,7 @@ function vm_names() {
 function destroy() {
     local names
     names="$(vm_names)"
-    if [ "$(gcloud compute instances list --zone "$ZONE" -q "$names" | wc -l)" -le 1 ]; then
+    if [ "$(gcloud compute instances list --zones "$ZONE" -q "$names" | wc -l)" -le 1 ]; then
         return 0
     fi
     for i in {0..10}; do
