@@ -186,6 +186,9 @@ case "$1" in
         # see if template exists
         if ! gcloud compute images list | grep "$PROJECT" | grep "$TEMPLATE_NAME"; then
             make_template
+        else
+            echo "Reusing existing template:"
+            gcloud compute images describe "$TEMPLATE_NAME" | grep "^creationTimestamp"
         fi
         ;;
 esac
