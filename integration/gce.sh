@@ -10,6 +10,7 @@ set -e
 : "${KEY_FILE:=/tmp/gce_private_key.json}"
 : "${SSH_KEY_FILE:=$HOME/.ssh/gce_ssh_key}"
 : "${IMAGE:=ubuntu-14-04}"
+: "${USER_ACCOUNT:=ubuntu}"
 : "${ZONE:=us-central1-a}"
 : "${PROJECT:=}"
 : "${TEMPLATE_NAME:=}"
@@ -85,12 +86,16 @@ function try_connect() {
 
 function install_docker_on() {
     name=$1
+    echo "Installing Docker on $name for user ${USER_ACCOUNT}"
+    # shellcheck disable=SC2087
     ssh -t "$name" sudo bash -x -s <<EOF
+set -x
+set -e
 curl -sSL https://get.docker.com/gpg | sudo apt-key add -
 curl -sSL https://get.docker.com/ | sh
 apt-get update -qq;
 apt-get install -q -y --force-yes --no-install-recommends ethtool;
-usermod -a -G docker vagrant;
+usermod -a -G docker "${USER_ACCOUNT}";
 echo 'DOCKER_OPTS="-H unix:///var/run/docker.sock -H unix:///var/run/alt-docker.sock -H tcp://0.0.0.0:2375 -s overlay"' >> /etc/default/docker;
 service docker restart
 EOF
@@ -158,7 +163,7 @@ function hosts() {
         hosts=($hostname "${hosts[@]}")
         args=("--add-host=$hostname:$(internal_ip "$json" "$name")" "${args[@]}")
     done
-    echo export SSH=\"ssh -l vagrant\"
+    echo export SSH=\"ssh -l "${USER_ACCOUNT}"\"
     echo "export HOSTS=\"${hosts[*]}\""
     echo "export ADD_HOST_ARGS=\"${args[*]}\""
     rm "$json"
