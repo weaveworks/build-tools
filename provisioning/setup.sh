@@ -313,7 +313,8 @@ function tf_ssh() {
     local ip="$(sed "$1q;d" <<<"$(terraform output public_etc_hosts)" | cut -d ' ' -f 1)"
     shift # Drop the first argument, corresponding to the machine ID, to allow passing other arguments to SSH using "$@" -- see below.
     [ -z "$ip" ] && tf_ssh_usage "Invalid host ID provided." && return 1
-    ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "$@" "$(terraform output username)"@"$ip"
+    # shellcheck disable=SC2029
+    ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "$@" "$(terraform output username)@$ip"
 }
 alias tf_ssh='tf_ssh'
 
