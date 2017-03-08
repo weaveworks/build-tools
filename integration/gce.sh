@@ -122,7 +122,7 @@ function setup() {
     names=($(vm_names))
     gcloud compute instances create "${names[@]}" --image "$TEMPLATE_NAME" --zone "$ZONE" --tags "test$SUFFIX" --network=test
     my_ip="$(curl -s http://ipinfo.io/ip)"
-    gcloud compute firewall-rules create "test-allow-docker$SUFFIX" --network=test --allow tcp:2375,tcp:12375,tcp:4040 --target-tags "test$SUFFIX" --source-ranges "$my_ip"
+    gcloud compute firewall-rules create "test-allow-docker$SUFFIX" --network=test --allow tcp:2375,tcp:12375,tcp:4040,tcp:80 --target-tags "test$SUFFIX" --source-ranges "$my_ip"
 
     gcloud compute config-ssh --ssh-key-file "$SSH_KEY_FILE"
     sed -i '/UserKnownHostsFile=\/dev\/null/d' ~/.ssh/config
