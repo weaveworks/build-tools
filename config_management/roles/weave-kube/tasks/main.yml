@@ -2,11 +2,11 @@
 # Set up Weave Kube on top of Kubernetes.
 
 - name: configure weave net's cni plugin
-  command: kubectl apply -f https://git.io/weave-kube
+  command: kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f https://git.io/weave-kube
   when: ' {{ play_hosts[0] == inventory_hostname }}'
 
 - name: list kubernetes' pods
-  command: kubectl get pods --all-namespaces
+  command: kubectl --kubeconfig /etc/kubernetes/admin.conf get pods --all-namespaces
   when: ' {{ play_hosts[0] == inventory_hostname }}'
   changed_when: false
   register: kubectl_get_pods

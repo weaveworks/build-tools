@@ -12,6 +12,14 @@
     repo: deb http://apt.kubernetes.io/ kubernetes-{{ ansible_distribution_release }} main
     state: present
   register: apt_k8s_repo
+  when: '"alpha" not in kubernetes_version and "beta" not in kubernetes_version'
+
+- name: add kubernetes' apt repository (kubernetes-{{ ansible_distribution_release }}-unstable)
+  apt_repository:
+    repo: deb http://apt.kubernetes.io/ kubernetes-{{ ansible_distribution_release }}-unstable main
+    state: present
+  register: apt_k8s_repo
+  when: '"alpha" in kubernetes_version or "beta" in kubernetes_version'
 
 - name: update apt's cache
   apt: 
