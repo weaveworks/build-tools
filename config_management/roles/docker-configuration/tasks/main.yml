@@ -26,7 +26,7 @@
   register: docker_over_tcp
 
 - name: restart docker service
-  systemd: 
+  systemd:
     name: docker
     state: restarted
     daemon_reload: yes  # ensure docker_over_tcp.conf is picked up.

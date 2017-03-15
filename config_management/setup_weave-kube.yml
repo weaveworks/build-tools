@@ -1,6 +1,6 @@
 ---
 ################################################################################
-# Install Docker and Kubernetes, and configure Kubernetes to 
+# Install Docker and Kubernetes, and configure Kubernetes to
 # use Weave Net's CNI plugin (a.k.a. Weave Kube).
 #
 # See also:
@@ -13,7 +13,7 @@
   gather_facts: false  # required in case Python is not available on the host
   become: true
   become_user: root
-  
+
   pre_tasks:
     - include: library/setup_ansible_dependencies.yml
 
