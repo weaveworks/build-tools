@@ -4,7 +4,7 @@
   package:
     name: "{{ item }}"
     state: present
-  with_items: 
+  with_items:
     - jq
 
 - name: install ethtool (used by the weave script)
@@ -12,7 +12,7 @@
     name: "{{ item }}"
     install_recommends: no
     state: present
-  with_items: 
+  with_items:
     - ethtool
 
 - name: install nsenter (used by the weave script)
@@ -22,7 +22,7 @@
   package:
     name: "{{ item }}"
     state: present
-  with_items: 
+  with_items:
     - python-pip
 
 - name: install docker-py (for docker_image)
@@ -34,7 +34,7 @@
   docker_image:
     name: '{{ item }}'
     state: present
-  with_items: 
+  with_items:
     - alpine
     - aanand/docker-dnsutils
     - weaveworks/hello-world
