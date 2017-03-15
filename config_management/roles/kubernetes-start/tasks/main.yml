@@ -19,7 +19,7 @@
   when: '{{ play_hosts | length }} == 1'
 
 - name:  kubeadm join on workers
-  command: "kubeadm join --token={{ kubernetes_token }} {{ hostvars[play_hosts[0]].private_ip }}"
+  command: 'kubeadm join --token={{ kubernetes_token }} {{ hostvars[play_hosts[0]].private_ip }}{{ (kubernetes_version > "1.6") | ternary(":6443", "") }}'
   when: ' {{ play_hosts[0] != inventory_hostname }}'
 
 - name: list kubernetes' pods
