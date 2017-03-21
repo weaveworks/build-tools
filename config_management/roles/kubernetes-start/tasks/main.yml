@@ -15,7 +15,7 @@
   when: ' {{ play_hosts[0] == inventory_hostname }}'
 
 - name: allow pods to be run on the master (if only node)
-  command: 'kubectl --kubeconfig /etc/kubernetes/admin.conf taint nodes --all {{ (kubernetes_version < "1.6") | ternary("", "node-role.kubernetes.io/master:NoSchedule-") }}'
+  command: 'kubectl --kubeconfig /etc/kubernetes/admin.conf taint nodes --all {{ (kubernetes_version < "1.6") | ternary("dedicated-", "node-role.kubernetes.io/master:NoSchedule-") }}'
   when: '{{ play_hosts | length }} == 1'
 
 - name:  kubeadm join on workers
