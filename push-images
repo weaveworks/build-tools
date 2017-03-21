@@ -26,7 +26,6 @@ while [ $# -gt 0 ]; do
     esac
 done
 
-
 push_image() {
     local image="$1"
     docker push ${image}:${IMAGE_TAG}
