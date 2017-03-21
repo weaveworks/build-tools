@@ -13,7 +13,7 @@
     - include: library/setup_ansible_dependencies.yml
 
   roles:
-    - docker-from-get.docker.com
+    - docker-install
     - kubernetes-install
     - weave-net-utilities
     - kubelet-stop
