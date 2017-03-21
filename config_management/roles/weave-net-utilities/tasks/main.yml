@@ -10,7 +10,6 @@
 - name: install ethtool (used by the weave script)
   package:
     name: "{{ item }}"
-    install_recommends: no
     state: present
   with_items:
     - ethtool
