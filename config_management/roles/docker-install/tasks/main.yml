@@ -15,6 +15,10 @@
   when: docker_install_role == 'docker-from-docker-repo'
 
 - include_role:
+    name: docker-from-docker-ce-repo
+  when: docker_install_role == 'docker-from-docker-ce-repo'
+
+- include_role:
     name: docker-from-get.docker.com
   when: docker_install_role == 'docker-from-get.docker.com'
 
