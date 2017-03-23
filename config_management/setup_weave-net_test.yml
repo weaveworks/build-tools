@@ -14,6 +14,7 @@
 
   roles:
     - docker-install
-    - kubernetes-install
     - weave-net-utilities
+    - kubernetes-install
+    - kubernetes-docker-images
     - kubelet-stop
