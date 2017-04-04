@@ -15,6 +15,6 @@
   roles:
     - dev-tools
     - golang-from-tarball
-    - docker-from-get.docker.com
+    - docker-install
     # Do not run this role when building with Vagrant, as sources have been already checked out:
     - { role: weave-net-sources, when: "ansible_user != 'vagrant'" }

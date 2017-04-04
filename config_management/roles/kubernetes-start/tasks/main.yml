@@ -14,8 +14,12 @@
   command: 'kubeadm init --token={{ kubernetes_token }}'
   when: ' {{ play_hosts[0] == inventory_hostname }}'
 
+- name: optionally set kubeconfig option
+  set_fact:
+    kubeconfig: '{{ (kubernetes_version >= "1.5.4") | ternary("--kubeconfig /etc/kubernetes/admin.conf", "") }}'
+
 - name: allow pods to be run on the master (if only node)
-  command: 'kubectl --kubeconfig /etc/kubernetes/admin.conf taint nodes --all {{ (kubernetes_version < "1.6") | ternary("", "node-role.kubernetes.io/master:NoSchedule-" }}'
+  command: 'kubectl {{ kubeconfig }} taint nodes --all {{ (kubernetes_version < "1.6") | ternary("dedicated-", "node-role.kubernetes.io/master:NoSchedule-") }}'
   when: '{{ play_hosts | length }} == 1'
 
 - name:  kubeadm join on workers
@@ -23,7 +27,7 @@
   when: ' {{ play_hosts[0] != inventory_hostname }}'
 
 - name: list kubernetes' pods
-  command: kubectl --kubeconfig /etc/kubernetes/admin.conf get pods --all-namespaces
+  command: kubectl {{ kubeconfig }} get pods --all-namespaces
   when: ' {{ play_hosts[0] == inventory_hostname }}'
   changed_when: false
   register: kubectl_get_pods
