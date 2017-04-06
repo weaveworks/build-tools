@@ -10,13 +10,14 @@
     state: restarted
     enabled: yes
 
-- name: kubeadm init on the master
-  command: 'kubeadm init --token={{ kubernetes_token }}'
-  when: ' {{ play_hosts[0] == inventory_hostname }}'
-
 - name: optionally set kubeconfig option
   set_fact:
     kubeconfig: '{{ (kubernetes_version >= "1.5.4") | ternary("--kubeconfig /etc/kubernetes/admin.conf", "") }}'
+    kubernetes_version_option: '{{ (kubernetes_version >= "1.6") | ternary("kubernetes_version", "use-kubernetes-version") }}'
+
+- name: kubeadm init on the master
+  command: 'kubeadm init --{{ kubernetes_version_option }}=v{{ kubernetes_version }} --token={{ kubernetes_token }}'
+  when: ' {{ play_hosts[0] == inventory_hostname }}'
 
 - name: allow pods to be run on the master (if only node)
   command: 'kubectl {{ kubeconfig }} taint nodes --all {{ (kubernetes_version < "1.6") | ternary("dedicated-", "node-role.kubernetes.io/master:NoSchedule-") }}'

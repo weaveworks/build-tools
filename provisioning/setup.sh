@@ -308,6 +308,7 @@ Usage:
 Examples:
   $ tf_ssh 1
   $ tf_ssh 1 -o LogLevel VERBOSE
+  $ tf_ssh 1 -i ~/.ssh/custom_private_key_id_rsa
 Available machines:
 EOF
     cat -n >&2 <<<"$(terraform output public_etc_hosts)"
@@ -333,7 +334,7 @@ Usage:
 Examples:
   $ tf_ansi setup_weave-net_dev
   $ tf_ansi 1
-  $ tf_ansi 1 -vvv
+  $ tf_ansi 1 -vvv --private-key=~/.ssh/custom_private_key_id_rsa
   $ tf_ansi setup_weave-kube --extra-vars "docker_version=1.12.6 kubernetes_version=1.5.6"
 Available playbooks:
 EOF
