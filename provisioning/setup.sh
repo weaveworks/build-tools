@@ -308,6 +308,7 @@ Usage:
 Examples:
   $ tf_ssh 1
   $ tf_ssh 1 -o LogLevel VERBOSE
+  $ tf_ssh 1 -i ~/.ssh/custom_private_key_id_rsa
 Available machines:
 EOF
     cat -n >&2 <<<"$(terraform output public_etc_hosts)"
