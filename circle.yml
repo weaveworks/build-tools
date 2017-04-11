@@ -39,8 +39,6 @@ deployment:
         cd $SRCDIR/build;
         for image in $(make images); do
           # Tag the built images with the revision of this repo.
-          GIT_TAG="$(../image-tag)"
-          docker tag "${image}:latest" "${image}:${GIT_TAG}"
           docker push "${image}:${GIT_TAG}"
 
           # Tag the built images with something derived from the base images in
