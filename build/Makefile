@@ -7,10 +7,9 @@ IMAGE_PREFIX := weaveworks/build-
 IMAGE_TAG := $(shell ../image-tag)
 UPTODATE := .uptodate
 
-# Building Docker images is now automated. The convention is every directory
-# with a Dockerfile in it builds an image calls quay.io/weaveworks/<dirname>.
-# Dependencies (i.e. things that go in the image) still need to be explicitly
-# declared.
+# Every directory with a Dockerfile in it builds an image called
+# $(IMAGE_PREFIX)<dirname>. Dependencies (i.e. things that go in the image)
+# still need to be explicitly declared.
 %/$(UPTODATE): %/Dockerfile %/*
 	$(SUDO) docker build -t $(IMAGE_PREFIX)$(shell basename $(@D)) $(@D)/
 	$(SUDO) docker tag $(IMAGE_PREFIX)$(shell basename $(@D)) $(IMAGE_PREFIX)$(shell basename $(@D)):$(IMAGE_TAG)
@@ -25,7 +24,12 @@ images:
 	$(info $(IMAGE_NAMES))
 	@echo > /dev/null
 
-# Define imagetag-golang, etc, for each image, which parses the dockerfile for an image tag
+# Define imagetag-golang, etc, for each image, which parses the dockerfile and
+# prints an image tag. For example:
+#     FROM golang:1.8.1-stretch
+# in the "foo/Dockerfile" becomes:
+#     $ make imagetag-foo
+#     1.8.1-stretch
 define imagetag_dep
 .PHONY: imagetag-$(1)
 $(patsubst $(IMAGE_PREFIX)%,imagetag-%,$(1)): $(patsubst $(IMAGE_PREFIX)%,%,$(1))/Dockerfile
@@ -33,7 +37,6 @@ $(patsubst $(IMAGE_PREFIX)%,imagetag-%,$(1)): $(patsubst $(IMAGE_PREFIX)%,%,$(1)
 endef
 $(foreach image, $(IMAGE_NAMES), $(eval $(call imagetag_dep, $(image))))
 
-# Manually declared dependancies And what goes into each exe
 all: $(UPTODATE_FILES)
 
 clean:
