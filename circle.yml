@@ -46,7 +46,7 @@ deployment:
           # Tag the built images with something derived from the base images in
           # their respective Dockerfiles. So "FROM golang:1.8.0-stretch" as a
           # base image would lead to a tag of "1.8.0-stretch"
-          IMG_TAG=$(make "imagetag-${image#weaveworks/build-}")
+          IMG_TAG=$(make "imagetag-${image#quay.io/weaveworks/build-}")
           docker tag "${image}:latest" "${image}:${IMG_TAG}"
           docker push "${image}:${IMG_TAG}"
         done
