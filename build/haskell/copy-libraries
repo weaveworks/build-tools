@@ -25,7 +25,7 @@ output_dir="${2}"
 exe_name=$(basename "${binary_path}")
 
 # Identify linked libraries.
-libraries=( $( ldd "${binary_path}" | awk '{print $(NF-1)}' | grep -v '=>' ) )
+libraries=($(ldd "${binary_path}" | awk '{print $(NF-1)}' | grep -v '=>'))
 # Add /bin/sh, which we need for Docker imports.
 libraries+=('/bin/sh')
 
