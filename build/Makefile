@@ -33,7 +33,7 @@ images:
 define imagetag_dep
 .PHONY: imagetag-$(1)
 $(patsubst $(IMAGE_PREFIX)%,imagetag-%,$(1)): $(patsubst $(IMAGE_PREFIX)%,%,$(1))/Dockerfile
-	@cat $$< | grep "^FROM " | head -n1 | sed 's/FROM \([[:alpha:]]*\):\(.*\)/\2/'
+	@cat $$< | grep "^FROM " | head -n1 | sed 's/FROM \(.*\):\(.*\)/\2/'
 endef
 $(foreach image, $(IMAGE_NAMES), $(eval $(call imagetag_dep, $(image))))
 
