@@ -112,7 +112,9 @@ run_test() {
     if ! go test "${GO_TEST_ARGS_RUN[@]}" "$dir"; then
         fail=1
     fi
-    local RUNTIME=$(($(date +%s) - START))
+    local END
+    END=$(date +%s)
+    local RUNTIME=$((END - START))
 
     # Report test runtime when running on circle, to help scheduler
     if [ -n "$CIRCLECI" ] && [ -z "$NO_SCHEDULER" ] && [ -x "$DIR/sched" ]; then
