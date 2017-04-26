@@ -348,7 +348,7 @@ function tf_ansi() {
     shift # Drop the first argument to allow passing other arguments to Ansible using "$@" -- see below.
     if [[ "$id" =~ ^[0-9]+$ ]]; then
         local playbooks=(../../config_management/*.yml)
-        local path="${playbooks[(($id-1))]}" # Select the ith entry in the list of playbooks (0-based).
+        local path="${playbooks[(($id - 1))]}" # Select the ith entry in the list of playbooks (0-based).
     else
         local path="$(dirname "${BASH_SOURCE[0]}")/../../config_management/$id.yml"
     fi

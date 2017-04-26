@@ -1,5 +1,5 @@
 ---
-go_version: 1.7.4
+go_version: 1.8.1
 terraform_version: 0.8.5
 docker_version: 1.11.2
 docker_install_role: 'docker-from-get.docker.com'
