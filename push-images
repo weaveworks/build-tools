@@ -28,7 +28,7 @@ done
 
 push_image() {
     local image="$1"
-    docker push ${image}:${IMAGE_TAG}
+    docker push "${image}:${IMAGE_TAG}"
 }
 
 for image in ${IMAGES}; do
@@ -38,12 +38,12 @@ for image in ${IMAGES}; do
     echo "Will push ${image}:${IMAGE_TAG}"
     push_image "${image}" &
 
-    if [ -z "NO_DOCKER_HUB" ]; then
+    if [ -z "$NO_DOCKER_HUB" ]; then
         # remove the quey prefix and push to docker hub
         docker_hub_image=${image#$QUAY_PREFIX}
-        docker tag ${image}:${IMAGE_TAG} ${docker_hub_image}:${IMAGE_TAG}
+        docker tag "${image}:${IMAGE_TAG}" "${docker_hub_image}:${IMAGE_TAG}"
         echo "Will push ${docker_hub_image}:${IMAGE_TAG}"
-        docker push ${docker_hub_image}:${IMAGE_TAG}
+        docker push "${docker_hub_image}:${IMAGE_TAG}"
     fi
 done
 
