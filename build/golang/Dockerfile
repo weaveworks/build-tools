@@ -13,7 +13,7 @@ RUN apt-get update && \
       python-yaml \
       unzip && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-RUN pip install attrs
+RUN pip install attrs pyhcl
 RUN go clean -i net && \
 	go install -tags netgo std && \
 	go install -race -tags netgo std
