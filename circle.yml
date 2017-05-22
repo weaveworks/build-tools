@@ -16,7 +16,7 @@ dependencies:
     - |
       curl -fsSL -o shfmt https://github.com/mvdan/sh/releases/download/v1.3.0/shfmt_v1.3.0_linux_amd64 && \
       chmod +x shfmt && \
-      mv shfmt /usr/bin
+      sudo mv shfmt /usr/bin
     - |
       cd $SRCDIR;
       go get \
