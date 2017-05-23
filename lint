@@ -154,18 +154,18 @@ lint_md() {
 }
 
 lint_py() {
-  local filename="$1"
-  local lint_result=0
+    local filename="$1"
+    local lint_result=0
 
-  if yapf --diff "${filename}" | grep -qE '^[+-]'; then
-    lint_result=1
-    echo "${filename}: run yapf --in-place ${filename}"
-  else
-    # Only run flake8 if yapf passes, since they pick up a lot of similar issues
-    flake8 "${filename}" || lint_result=1
-  fi
+    if yapf --diff "${filename}" | grep -qE '^[+-]'; then
+        lint_result=1
+        echo "${filename}: run yapf --in-place ${filename}"
+    else
+        # Only run flake8 if yapf passes, since they pick up a lot of similar issues
+        flake8 "${filename}" || lint_result=1
+    fi
 
-  return $lint_result
+    return $lint_result
 }
 
 lint() {
