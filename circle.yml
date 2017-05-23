@@ -25,6 +25,7 @@ dependencies:
         github.com/golang/lint/golint \
         github.com/kisielk/errcheck \
         github.com/fatih/hclfmt
+    - pip install yapf flake8
 
 test:
   override:
