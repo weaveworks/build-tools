@@ -33,7 +33,7 @@ for image in ${IMAGES}; do
     fi
     echo "Will push ${image}:${IMAGE_TAG}"
     docker push "${image}:${IMAGE_TAG}" &
-    pids+=" $!"
+    pids="$pids $!"
 
     if [ -z "$NO_DOCKER_HUB" ]; then
         # remove the quey prefix and push to docker hub
@@ -41,14 +41,13 @@ for image in ${IMAGES}; do
         docker tag "${image}:${IMAGE_TAG}" "${docker_hub_image}:${IMAGE_TAG}"
         echo "Will push ${docker_hub_image}:${IMAGE_TAG}"
         docker push "${docker_hub_image}:${IMAGE_TAG}" &
-        pids+=" $!"
+        pids="$pids $!"
     fi
 done
 
+# Wait individually for tasks so we fail-exit on any non-zero return code
 for p in $pids; do
-    if ! wait $p; then
-        exit 1
-    fi
+    wait $p
 done
 
 wait
