@@ -45,13 +45,10 @@ for image in ${IMAGES}; do
     fi
 done
 
-EC=0
 for p in $pids; do
     if ! wait $p; then
-        echo "Process $p failed with $?"
-        EC=1
+        exit 1
     fi
 done
 
 wait
-exit $EC
