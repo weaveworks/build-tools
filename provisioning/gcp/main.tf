@@ -36,6 +36,9 @@ resource "google_compute_instance" "tf_test_vm" {
     }
   }
 
+  # Required by some `weave expose` tests
+  can_ip_forward = true
+
   metadata {
     ssh-keys = "${var.gcp_username}:${file("${var.gcp_public_key_path}")}"
   }
