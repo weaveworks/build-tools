@@ -241,7 +241,7 @@ filter_out() {
 
 list_files() {
     if [ $# -gt 0 ]; then
-        find "$@" | grep -vE '(^|/)vendor/'
+        find "$@" \( -name vendor -o -name .git \) -prune -o -print
     else
         git ls-files --exclude-standard | grep -vE '(^|/)vendor/'
     fi
