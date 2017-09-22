@@ -51,14 +51,6 @@ spell_check() {
     local filename="$1"
     local lint_result=0
 
-    # we don't want to spell check tar balls, binaries, Makefile and json files
-    if file "$filename" | grep executable >/dev/null 2>&1; then
-        return $lint_result
-    fi
-    if [[ $filename == *".tar" || $filename == *".gz" || $filename == *".json" || $(basename "$filename") == "Makefile" ]]; then
-        return $lint_result
-    fi
-
     # misspell is completely optional.  If you don't like it
     # don't have it installed.
     if ! type misspell >/dev/null 2>&1; then
@@ -196,7 +188,13 @@ lint() {
         *.py) lint_py "${filename}" || lint_result=1 ;;
     esac
 
-    spell_check "${filename}" || lint_result=1
+    # we don't want to spell check tar balls, binaries, Makefile and json files
+    case "$mimetype.$ext" in
+        *.tar | *.gz | *.json) ;;
+        application/x-executable.*) ;;
+        text/x-makefile.*) ;;
+        *) spell_check "${filename}" || lint_result=1 ;;
+    esac
 
     return $lint_result
 }
