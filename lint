@@ -186,16 +186,14 @@ lint() {
         *.pb.go) return ;;
     esac
 
-    if [[ "$(file --mime-type "${filename}" | awk '{print $2}')" == "text/x-shellscript" ]]; then
-        ext="sh"
-    fi
+    mimetype=$(file --mime-type "${filename}" | awk '{print $2}')
 
-    case "$ext" in
-        go) lint_go "${filename}" || lint_result=1 ;;
-        sh) lint_sh "${filename}" || lint_result=1 ;;
-        tf) lint_tf "${filename}" || lint_result=1 ;;
-        md) lint_md "${filename}" || lint_result=1 ;;
-        py) lint_py "${filename}" || lint_result=1 ;;
+    case "$mimetype.$ext" in
+        text/x-shellscript.*) lint_sh "${filename}" || lint_result=1 ;;
+        *.go) lint_go "${filename}" || lint_result=1 ;;
+        *.tf) lint_tf "${filename}" || lint_result=1 ;;
+        *.md) lint_md "${filename}" || lint_result=1 ;;
+        *.py) lint_py "${filename}" || lint_result=1 ;;
     esac
 
     spell_check "${filename}" || lint_result=1
