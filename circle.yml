@@ -26,6 +26,7 @@ dependencies:
         github.com/kisielk/errcheck \
         github.com/fatih/hclfmt
     - pip install yapf==0.16.2 flake8==3.3.0
+    - sudo apt-get update && sudo apt install shellcheck
 
 test:
   override:

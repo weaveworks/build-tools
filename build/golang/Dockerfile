@@ -11,6 +11,7 @@ RUN apt-get update && \
       python-pip \
       python-requests \
       python-yaml \
+      shellcheck \
       unzip && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 RUN pip install attrs pyhcl yapf==0.16.2 flake8==3.3.0
