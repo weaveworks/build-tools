@@ -6,7 +6,8 @@
 #
 # For shell files, it runs shfmt. If you don't have that installed, you can get
 # it with:
-#   go get -u gopkg.in/mvdan/sh.v1/cmd/shfmt
+#   curl -fsSLo shfmt https://github.com/mvdan/sh/releases/download/v1.3.0/shfmt_v1.3.0_linux_amd64
+#   chmod +x shfmt
 #
 # With no arguments, it lints the current files staged
 # for git commit.  Or you can pass it explicit filenames
@@ -240,7 +241,7 @@ filter_out() {
 
 list_files() {
     if [ $# -gt 0 ]; then
-        find "$@" | grep -vE '(^|/)vendor/'
+        find "$@" \( -name vendor -o -name .git \) -prune -o -print
     else
         git ls-files --exclude-standard | grep -vE '(^|/)vendor/'
     fi
