@@ -51,14 +51,6 @@ spell_check() {
     local filename="$1"
     local lint_result=0
 
-    # we don't want to spell check tar balls, binaries, Makefile and json files
-    if file "$filename" | grep executable >/dev/null 2>&1; then
-        return $lint_result
-    fi
-    if [[ $filename == *".tar" || $filename == *".gz" || $filename == *".json" || $(basename "$filename") == "Makefile" ]]; then
-        return $lint_result
-    fi
-
     # misspell is completely optional.  If you don't like it
     # don't have it installed.
     if ! type misspell >/dev/null 2>&1; then
@@ -186,19 +178,24 @@ lint() {
         *.pb.go) return ;;
     esac
 
-    if [[ "$(file --mime-type "${filename}" | awk '{print $2}')" == "text/x-shellscript" ]]; then
-        ext="sh"
-    fi
+    mimetype=$(file --mime-type "${filename}" | awk '{print $2}')
 
-    case "$ext" in
-        go) lint_go "${filename}" || lint_result=1 ;;
-        sh) lint_sh "${filename}" || lint_result=1 ;;
-        tf) lint_tf "${filename}" || lint_result=1 ;;
-        md) lint_md "${filename}" || lint_result=1 ;;
-        py) lint_py "${filename}" || lint_result=1 ;;
+    case "$mimetype.$ext" in
+        text/x-shellscript.*) lint_sh "${filename}" || lint_result=1 ;;
+        *.go) lint_go "${filename}" || lint_result=1 ;;
+        *.tf) lint_tf "${filename}" || lint_result=1 ;;
+        *.md) lint_md "${filename}" || lint_result=1 ;;
+        *.py) lint_py "${filename}" || lint_result=1 ;;
     esac
 
-    spell_check "${filename}" || lint_result=1
+    # we don't want to spell check tar balls, binaries, Makefile and json files
+    case "$mimetype.$ext" in
+        *.tar | *.gz | *.json) ;;
+        *.req | *.key | *.pem | *.crt) ;;
+        application/x-executable.*) ;;
+        text/x-makefile.*) ;;
+        *) spell_check "${filename}" || lint_result=1 ;;
+    esac
 
     return $lint_result
 }
@@ -241,7 +238,7 @@ filter_out() {
 
 list_files() {
     if [ $# -gt 0 ]; then
-        find "$@" \( -name vendor -o -name .git \) -prune -o -print
+        find "$@" \( -name vendor -o -name .git \) -prune -o -type f
     else
         git ls-files --exclude-standard | grep -vE '(^|/)vendor/'
     fi
