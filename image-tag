@@ -4,6 +4,15 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-WORKING_SUFFIX=$(if git status --porcelain | grep -qE '^(?:[^?][^ ]|[^ ][^?])\s'; then echo "-WIP"; else echo ""; fi)
+# Figure out if we have local changes. We don't look at files not ignored by
+# .gitignore for fear of false positives.
+# git diff returns 1 (false) when there's a diff, 0 (true) otherwise.
+HAS_STAGED_CHANGES=$(if git diff --cached --exit-code >/dev/null; then echo no; else echo yes; fi)
+HAS_UNSTAGED_CHANGES=$(if git diff --exit-code >/dev/null; then echo no; else echo yes; fi)
+WORKING_SUFFIX=
+if [ "$HAS_STAGED_CHANGES" = "yes" ] || [ "$HAS_UNSTAGED_CHANGES" = "yes" ]; then
+    WORKING_SUFFIX="-WIP"
+fi
+
 BRANCH_PREFIX=$(git rev-parse --abbrev-ref HEAD)
 echo "${BRANCH_PREFIX//\//-}-$(git rev-parse --short HEAD)$WORKING_SUFFIX"
