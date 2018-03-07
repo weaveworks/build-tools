@@ -152,7 +152,7 @@ lint_py() {
 
     if yapf --diff "${filename}" | grep -qE '^[+-]'; then
         lint_result=1
-        echo "${filename}: run yapf --in-place ${filename}"
+        echo "${filename} needs reformatting. Run: yapf --in-place ${filename}"
     else
         # Only run flake8 if yapf passes, since they pick up a lot of similar issues
         flake8 "${filename}" || lint_result=1
