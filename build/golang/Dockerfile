@@ -48,3 +48,10 @@ RUN mkdir -p /var/run/secrets/kubernetes.io/serviceaccount && \
 		touch /var/run/secrets/kubernetes.io/serviceaccount/token
 COPY build.sh /
 ENTRYPOINT ["/build.sh"]
+
+ARG revision
+LABEL maintainer="Weaveworks <help@weave.works>" \
+      org.opencontainers.image.title="golang" \
+      org.opencontainers.image.source="https://github.com/weaveworks/build-tools/tree/master/build/golang" \
+      org.opencontainers.image.revision="${revision}" \
+      org.opencontainers.image.vendor="Weaveworks"
