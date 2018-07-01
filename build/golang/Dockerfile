@@ -8,7 +8,8 @@ RUN apt-get update && \
       libprotobuf-dev \
       make \
       protobuf-compiler \
-      python-pip \
+      python3 \
+      python3-pip \
       python-requests \
       python-yaml \
       shellcheck \
