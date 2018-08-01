@@ -106,9 +106,12 @@ lint_sh() {
     local filename="$1"
     local lint_result=0
 
-    if ! diff -u "${filename}" <(shfmt -i 4 "${filename}"); then
-        lint_result=1
-        echo "${filename}: run shfmt -i 4 -w ${filename}"
+    # Skip shfmt validation, if not installed
+    if type shfmt >/dev/null 2>&1; then
+        if ! diff -u "${filename}" <(shfmt -i 4 "${filename}"); then
+            lint_result=1
+            echo "${filename}: run shfmt -i 4 -w ${filename}"
+        fi
     fi
 
     # the shellcheck is completely optional.  If you don't like it
