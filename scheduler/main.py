@@ -127,6 +127,7 @@ PROJECTS = [
     ('weaveworks/weave', 'weave-net-tests', 'us-central1-a', True),
     ('weaveworks/weave', 'positive-cocoa-90213', 'us-central1-a', True),
     ('weaveworks/scope', 'scope-integration-tests', 'us-central1-a', False),
+    ('weaveworks/wks', 'wks-tests', 'us-central1-a', True),
 ]
 
 
