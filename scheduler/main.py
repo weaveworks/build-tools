@@ -155,10 +155,10 @@ def gc_project(compute, repo, project, zone, gc_fw):
 
 
 def _get_running_builds(repo):
-    result = urlfetch.fetch(
-        'https://circleci.com/api/v1/project/%s' % repo,
-        headers={'Accept': 'application/json'})
-    assert result.status_code == 200
+    url = 'https://circleci.com/api/v1/project/%s' % repo
+    result = urlfetch.fetch(url, headers={'Accept': 'application/json'})
+    if result.status_code != 200:
+        raise RuntimeError('Failed to get running builds for repository "%s". URL: %s, Status code: %s. Response: %s' % (repo, url, result.status_code, result.content))
     builds = json.loads(result.content)
     running = {
         build['build_num']
