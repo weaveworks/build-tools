@@ -23,7 +23,7 @@ $ pip install -r requirements.txt -t lib
 
 - Run:
   ```console
-  $ appcfg.py update .
+  $ appcfg.py --version $(date '+%Y%m%dt%H%M%S') update .
   XX:XX PM Application: positive-cocoa-90213; version: 1
   XX:XX PM Host: appengine.google.com
   XX:XX PM Starting update of app: positive-cocoa-90213, version: 1
