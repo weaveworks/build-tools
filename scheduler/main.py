@@ -125,6 +125,8 @@ def _matches_any_regex(name, regexes):
 # See also: https://circleci.com/account/api
 CIRCLE_CI_API_TOKEN = 'cffb83afd920cfa109cbd3e9eecb7511a2d18bb9'
 
+# N.B.: When adding a project below, please ensure:
+# - its CircleCI project is either public, or is followed by the user attached to the above API token
 PROJECTS = [
     ('weaveworks/weave', 'weave-net-tests', 'us-central1-a', True, None),
     ('weaveworks/weave', 'positive-cocoa-90213', 'us-central1-a', True, None),
