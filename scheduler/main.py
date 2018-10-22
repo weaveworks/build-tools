@@ -122,12 +122,14 @@ def _matches_any_regex(name, regexes):
         if matches:
             return matches
 
+# See also: https://circleci.com/account/api
+CIRCLE_CI_API_TOKEN = 'cffb83afd920cfa109cbd3e9eecb7511a2d18bb9'
 
 PROJECTS = [
-    ('weaveworks/weave', 'weave-net-tests', 'us-central1-a', True),
-    ('weaveworks/weave', 'positive-cocoa-90213', 'us-central1-a', True),
-    ('weaveworks/scope', 'scope-integration-tests', 'us-central1-a', False),
-    ('weaveworks/wks', 'wks-tests', 'us-central1-a', True),
+    ('weaveworks/weave', 'weave-net-tests', 'us-central1-a', True, None),
+    ('weaveworks/weave', 'positive-cocoa-90213', 'us-central1-a', True, None),
+    ('weaveworks/scope', 'scope-integration-tests', 'us-central1-a', False, None),
+    ('weaveworks/wks', 'wks-tests', 'us-central1-a', True, CIRCLE_CI_API_TOKEN),
 ]
 
 
@@ -137,16 +139,16 @@ def gc():
     credentials = GoogleCredentials.get_application_default()
     compute = discovery.build('compute', 'v1', credentials=credentials)
 
-    for repo, project, zone, gc_fw in PROJECTS:
-        gc_project(compute, repo, project, zone, gc_fw)
+    for repo, project, zone, gc_fw, circleci_api_token in PROJECTS:
+        gc_project(compute, repo, project, zone, gc_fw, circleci_api_token)
 
     return "Done"
 
 
-def gc_project(compute, repo, project, zone, gc_fw):
+def gc_project(compute, repo, project, zone, gc_fw, circleci_api_token):
     logging.info("GCing %s, %s, %s", repo, project, zone)
     # Get list of builds, filter down to running builds:
-    running = _get_running_builds(repo)
+    running = _get_running_builds(repo, circleci_api_token)
     # Stop VMs for builds that aren't running:
     _gc_compute_engine_instances(compute, project, zone, running)
     # Remove firewall rules for builds that aren't running:
@@ -154,8 +156,11 @@ def gc_project(compute, repo, project, zone, gc_fw):
         _gc_firewall_rules(compute, project, running)
 
 
-def _get_running_builds(repo):
-    url = 'https://circleci.com/api/v1/project/%s' % repo
+def _get_running_builds(repo, circleci_api_token):
+    if circleci_api_token:
+        url = 'https://circleci.com/api/v1/project/%s?circle-token=%s' % (repo, circleci_api_token)
+    else:
+        url = 'https://circleci.com/api/v1/project/%s' % repo
     result = urlfetch.fetch(url, headers={'Accept': 'application/json'})
     if result.status_code != 200:
         raise RuntimeError('Failed to get running builds for repository "%s". URL: %s, Status code: %s. Response: %s' % (repo, url, result.status_code, result.content))
