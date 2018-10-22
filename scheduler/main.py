@@ -127,6 +127,8 @@ CIRCLE_CI_API_TOKEN = 'cffb83afd920cfa109cbd3e9eecb7511a2d18bb9'
 
 # N.B.: When adding a project below, please ensure:
 # - its CircleCI project is either public, or is followed by the user attached to the above API token
+# - user positive-cocoa-90213@appspot.gserviceaccount.com has "Compute Admin" access to its GCP project
+#   (or any other role including compute.instances.list/delete and compute.firewalls.list/delete)
 PROJECTS = [
     ('weaveworks/weave', 'weave-net-tests', 'us-central1-a', True, None),
     ('weaveworks/weave', 'positive-cocoa-90213', 'us-central1-a', True, None),
