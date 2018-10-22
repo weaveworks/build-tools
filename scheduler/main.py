@@ -141,7 +141,7 @@ PROJECTS = [
 def gc():
     # Get list of running VMs, pick build id out of VM name
     credentials = GoogleCredentials.get_application_default()
-    compute = discovery.build('compute', 'v1', credentials=credentials)
+    compute = discovery.build('compute', 'v1', credentials=credentials, cache_discovery=False)
 
     for repo, project, zone, gc_fw, circleci_api_token in PROJECTS:
         gc_project(compute, repo, project, zone, gc_fw, circleci_api_token)
