@@ -122,6 +122,7 @@ def _matches_any_regex(name, regexes):
         if matches:
             return matches
 
+
 # See also: https://circleci.com/account/api
 CIRCLE_CI_API_TOKEN = 'cffb83afd920cfa109cbd3e9eecb7511a2d18bb9'
 
@@ -132,8 +133,10 @@ CIRCLE_CI_API_TOKEN = 'cffb83afd920cfa109cbd3e9eecb7511a2d18bb9'
 PROJECTS = [
     ('weaveworks/weave', 'weave-net-tests', 'us-central1-a', True, None),
     ('weaveworks/weave', 'positive-cocoa-90213', 'us-central1-a', True, None),
-    ('weaveworks/scope', 'scope-integration-tests', 'us-central1-a', False, None),
-    ('weaveworks/wks', 'wks-tests', 'us-central1-a', True, CIRCLE_CI_API_TOKEN),
+    ('weaveworks/scope', 'scope-integration-tests', 'us-central1-a', False,
+     None),
+    ('weaveworks/wks', 'wks-tests', 'us-central1-a', True,
+     CIRCLE_CI_API_TOKEN),
 ]
 
 
@@ -141,7 +144,8 @@ PROJECTS = [
 def gc():
     # Get list of running VMs, pick build id out of VM name
     credentials = GoogleCredentials.get_application_default()
-    compute = discovery.build('compute', 'v1', credentials=credentials, cache_discovery=False)
+    compute = discovery.build(
+        'compute', 'v1', credentials=credentials, cache_discovery=False)
 
     for repo, project, zone, gc_fw, circleci_api_token in PROJECTS:
         gc_project(compute, repo, project, zone, gc_fw, circleci_api_token)
@@ -162,12 +166,15 @@ def gc_project(compute, repo, project, zone, gc_fw, circleci_api_token):
 
 def _get_running_builds(repo, circleci_api_token):
     if circleci_api_token:
-        url = 'https://circleci.com/api/v1/project/%s?circle-token=%s' % (repo, circleci_api_token)
+        url = 'https://circleci.com/api/v1/project/%s?circle-token=%s' % (
+            repo, circleci_api_token)
     else:
         url = 'https://circleci.com/api/v1/project/%s' % repo
     result = urlfetch.fetch(url, headers={'Accept': 'application/json'})
     if result.status_code != 200:
-        raise RuntimeError('Failed to get running builds for repository "%s". URL: %s, Status code: %s. Response: %s' % (repo, url, result.status_code, result.content))
+        raise RuntimeError(
+            'Failed to get running builds for repository "%s". URL: %s, Status code: %s. Response: %s'
+            % (repo, url, result.status_code, result.content))
     builds = json.loads(result.content)
     running = {
         build['build_num']
