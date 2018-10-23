@@ -127,9 +127,11 @@ def _matches_any_regex(name, regexes):
 CIRCLE_CI_API_TOKEN = 'cffb83afd920cfa109cbd3e9eecb7511a2d18bb9'
 
 # N.B.: When adding a project below, please ensure:
-# - its CircleCI project is either public, or is followed by the user attached to the above API token
-# - user positive-cocoa-90213@appspot.gserviceaccount.com has "Compute Admin" access to its GCP project
-#   (or any other role including compute.instances.list/delete and compute.firewalls.list/delete)
+# - its CircleCI project is either public, or is followed by the user attached
+#   to the above API token
+# - user positive-cocoa-90213@appspot.gserviceaccount.com has "Compute Admin"
+#   access to its GCP project (or any other role including
+#   compute.instances.list/delete and compute.firewalls.list/delete)
 PROJECTS = [
     ('weaveworks/weave', 'weave-net-tests', 'us-central1-a', True, None),
     ('weaveworks/weave', 'positive-cocoa-90213', 'us-central1-a', True, None),
@@ -173,7 +175,7 @@ def _get_running_builds(repo, circleci_api_token):
     result = urlfetch.fetch(url, headers={'Accept': 'application/json'})
     if result.status_code != 200:
         raise RuntimeError(
-            'Failed to get running builds for repository "%s". URL: %s, Status code: %s. Response: %s'
+            'Failed to get builds for "%s". URL: %s, Status: %s. Response: %s'
             % (repo, url, result.status_code, result.content))
     builds = json.loads(result.content)
     running = {
