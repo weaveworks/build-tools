@@ -23,7 +23,7 @@ jobs:
             cd build
             docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWORD
             for image in $(make images); do
-              # Tag the built images with the revision of this repo.
+              # Push all tags - latest and git-tag
               docker push "${image}"
 
               # Tag the built images with something derived from the base images in
