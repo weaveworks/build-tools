@@ -11,11 +11,10 @@ jobs:
     - checkout
     - run: cd build; make
     - run: docker run --rm -v "$PWD:$PWD" -w "$PWD" --entrypoint sh weaveworks/build-golang -c ./lint .
-    - run: cd cover; make
-    # Socks makefile needs to overwrite Go std library
-    - run: sudo chmod a+wr --recursive /usr/local/go/pkg
-    - run: cd socks; make
-    - run: cd runner; make
+    - run: docker run --rm -v "$PWD:$PWD" -w "$PWD" --entrypoint sh weaveworks/build-golang -c ./shell-lint .
+    - run: docker run --rm -v "$PWD/cover:/go/src/cover" -w "/go/src/cover" --entrypoint sh weaveworks/build-golang -c make
+    - run: docker run --rm -v "$PWD/socks:/go/src/socks" -w "/go/src/socks" --entrypoint sh weaveworks/build-golang -c "make proxy"
+    - run: docker run --rm -v "$PWD/runner:/go/src/runner" -w "/go/src/runner" --entrypoint sh weaveworks/build-golang -c make
 
     - deploy:
         command: |
