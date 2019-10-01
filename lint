@@ -22,7 +22,6 @@ LINT_IGNORE_FILE=${LINT_IGNORE_FILE:-".lintignore"}
 
 IGNORE_LINT_COMMENT=
 IGNORE_SPELLINGS=
-PARALLEL=
 while true; do
     case "$1" in
         -nocomment)
@@ -36,10 +35,6 @@ while true; do
         -ignorespelling)
             IGNORE_SPELLINGS="$2,$IGNORE_SPELLINGS"
             shift 2
-            ;;
-        -p)
-            PARALLEL=1
-            shift 1
             ;;
         *)
             break
@@ -247,7 +242,7 @@ lint_directory() {
     if compgen -G "$dirname/*.go" >/dev/null; then
         lint_go "${dirname}" || lint_result=1
     fi
-    ls $dirname/* | filter_out "$LINT_IGNORE_FILE" | lint_files
+    find . -maxdepth 1 "$dirname" | filter_out "$LINT_IGNORE_FILE" | lint_files
     return $lint_result
 }
 

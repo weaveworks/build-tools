@@ -11,6 +11,7 @@ jobs:
     - checkout
     - run: cd build; make
     - run: docker run --rm -v "$PWD:$PWD" -w "$PWD" --entrypoint sh weaveworks/build-golang -c ./lint .
+    - run: docker run --rm -v "$PWD:$PWD" -w "$PWD" --entrypoint sh weaveworks/build-golang -c ./shell-lint .
     - run: docker run --rm -v "$PWD/cover:/go/src/cover" -w "/go/src/cover" --entrypoint sh weaveworks/build-golang -c make
     - run: docker run --rm -v "$PWD/socks:/go/src/socks" -w "/go/src/socks" --entrypoint sh weaveworks/build-golang -c "make proxy"
     - run: docker run --rm -v "$PWD/runner:/go/src/runner" -w "/go/src/runner" --entrypoint sh weaveworks/build-golang -c make
