@@ -37,7 +37,7 @@ RUN go get -tags netgo \
 		github.com/golang/protobuf/protoc-gen-go \
 		github.com/kisielk/errcheck \
 		github.com/mjibson/esc \
-		github.com/prometheus/prometheus/cmd/promtool && \
+		&& \
 		rm -rf /go/pkg /go/src
 RUN mkdir protoc && \
 	cd protoc && \
