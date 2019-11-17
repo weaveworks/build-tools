@@ -8,13 +8,16 @@ RUN apt-get update && \
       libprotobuf-dev \
       make \
       protobuf-compiler \
-      python-pip \
+      python3 \
+      python3-pip \
       python-requests \
       python-yaml \
+      libssl-dev \
+      python-openssl \
       shellcheck \
       unzip && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-RUN pip install attrs pyhcl yapf==0.16.2 flake8==3.3.0
+RUN pip3 install attrs==19.2.0 pyhcl yapf==0.16.2 flake8==3.3.0
 RUN curl -fsSLo shfmt https://github.com/mvdan/sh/releases/download/v1.3.0/shfmt_v1.3.0_linux_amd64 && \
 	echo "b1925c2c405458811f0c227266402cf1868b4de529f114722c2e3a5af4ac7bb2  shfmt" | sha256sum -c && \
 	chmod +x shfmt && \
