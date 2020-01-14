@@ -262,6 +262,8 @@ list_directories() {
 
 if [ $# = 1 ] && [ -f "$1" ]; then
     lint "$1"
+elif [ $# = 0 ]; then
+    list_directories . | lint_directories
 else
     list_directories "$@" | lint_directories
 fi
