@@ -2,10 +2,10 @@
 # Install Docker's dependencies
 # See also: https://docs.docker.com/engine/installation/linux/ubuntulinux/#install
 
-- name: install linux-image-extra-*/virtual
+- name: install linux-modules-extra-*/virtual
   package:
     name: "{{ item }}"
     state: present
   with_items:
-    - linux-image-extra-{{ ansible_kernel }}
+    - linux-modules-extra-{{ ansible_kernel }}
     - linux-image-extra-virtual

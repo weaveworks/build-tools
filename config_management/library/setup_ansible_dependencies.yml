@@ -15,7 +15,7 @@
   changed_when: false  # never mutates state.
 
 - name: install python if missing (as required by ansible modules)
-  when: is_python_installed|failed  # skip otherwise
+  when: is_python_installed == 1  # skip otherwise
   raw: (test -e /usr/bin/apt-get && apt-get update && apt-get install -y python-minimal) || (test -e /usr/bin/yum && yum update && yum install -y python)
   changed_when: is_python_installed.rc == 1
 
@@ -26,7 +26,7 @@
   changed_when: false  # never mutates state.
 
 - name: install lsb_release if missing (as required for ansible facts)
-  when: is_lsb_release_installed|failed  # skip otherwise
+  when: is_lsb_release_installed == 1  # skip otherwise
   raw: (test -e /usr/bin/apt-get && apt-get install -y lsb_release) || (test -e /usr/bin/yum && yum install -y redhat-lsb-core)
   changed_when: is_lsb_release_installed.rc == 1
 
