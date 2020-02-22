@@ -261,9 +261,7 @@ lint_directories() {
 }
 
 list_directories() {
-    if [ $# -gt 0 ]; then
-        find "$@" \( -name vendor -o -name .git -o -name .cache -o -name .pkg \) -prune -o -type d
-    fi
+    find "$@" \( -name vendor -o -name .git -o -name .cache -o -name .pkg \) -prune -o -type d
 }
 
 PATTERNS=$(read_patterns "$LINT_IGNORE_FILE")
@@ -271,8 +269,6 @@ PATTERNS=$(read_patterns "$LINT_IGNORE_FILE")
 
 if [ $# = 1 ] && [ -f "$1" ]; then
     lint "$1"
-elif [ $# = 0 ]; then
-    list_directories . | lint_directories
 else
     list_directories "$@" | lint_directories
 fi
