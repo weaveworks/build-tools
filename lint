@@ -242,6 +242,8 @@ filter_out() {
 lint_directory() {
     local dirname="$1"
     local lint_result=0
+    matches_any "$dirname" "$PATTERNS" && return 0
+    [ -n "$DEBUG" ] && echo >&2 "> Linting directory: $dirname"
     # This test is just checking if there are any Go files in the directory
     if compgen -G "$dirname/*.go" >/dev/null; then
         lint_go "${dirname}" || lint_result=1
