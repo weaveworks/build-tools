@@ -82,14 +82,14 @@ def schedule(test_run, shard_count, shard):
     test_times_dict = dict(test_times)
     test_times.sort(key=operator.itemgetter(1))
 
-    shards = {i: [] for i in xrange(shard_count)}
+    shards = {i: [] for i in range(shard_count)}
     while test_times:
         test_name, time = test_times.pop()
 
         # find shortest shard and put it in that
         s, _ = min(
             ((i, sum(test_times_dict[t] for t in shards[i]))
-             for i in xrange(shard_count)),
+             for i in range(shard_count)),
             key=operator.itemgetter(1))
 
         shards[s].append(test_name)
