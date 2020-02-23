@@ -248,7 +248,7 @@ lint_directory() {
     if compgen -G "$dirname/*.go" >/dev/null; then
         lint_go "${dirname}" || lint_result=1
     fi
-    find "$dirname" -maxdepth 1 | filter_out "$PATTERNS" | lint_files
+    find "$dirname" -maxdepth 1 | filter_out "$PATTERNS" | lint_files || lint_result=1
     return $lint_result
 }
 
