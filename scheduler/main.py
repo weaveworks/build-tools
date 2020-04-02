@@ -124,7 +124,7 @@ def _matches_any_regex(name, regexes):
 
 
 # See also: https://circleci.com/account/api
-CIRCLE_CI_API_TOKEN = 'cffb83afd920cfa109cbd3e9eecb7511a2d18bb9'
+CIRCLE_CI_API_TOKEN = 'token-that-was-here-is-revoked'
 
 # N.B.: When adding a project below, please ensure:
 # - its CircleCI project is either public, or is followed by the user attached
