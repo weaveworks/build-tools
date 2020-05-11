@@ -123,9 +123,6 @@ def _matches_any_regex(name, regexes):
             return matches
 
 
-# See also: https://circleci.com/account/api
-CIRCLE_CI_API_TOKEN = 'token-that-was-here-is-revoked'
-
 # N.B.: When adding a project below, please ensure:
 # - its CircleCI project is either public, or is followed by the user attached
 #   to the above API token
@@ -137,8 +134,7 @@ PROJECTS = [
     ('weaveworks/weave', 'positive-cocoa-90213', 'us-central1-a', True, None),
     ('weaveworks/scope', 'scope-integration-tests', 'us-central1-a', False,
      None),
-    ('weaveworks/wks', 'wks-tests', 'us-central1-a', True,
-     CIRCLE_CI_API_TOKEN),
+    ('weaveworks/wksctl', 'wks-tests', 'us-central1-a', True, None),
 ]
 
 
