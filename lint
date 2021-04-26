@@ -123,9 +123,9 @@ lint_tf() {
     local filename="$1"
     local lint_result=0
 
-    if ! diff -u <(hclfmt "${filename}") "${filename}"; then
+    if ! terraform fmt -check -diff "${filename}"; then
         lint_result=1
-        echo "${filename}: run hclfmt -w ${filename}"
+        echo "${filename}: run terraform fmt -write ${filename}"
     fi
 
     return $lint_result

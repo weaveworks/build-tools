@@ -22,13 +22,16 @@ RUN curl -fsSLo shfmt https://github.com/mvdan/sh/releases/download/v1.3.0/shfmt
 	echo "b1925c2c405458811f0c227266402cf1868b4de529f114722c2e3a5af4ac7bb2  shfmt" | sha256sum -c && \
 	chmod +x shfmt && \
 	mv shfmt /usr/bin
+ENV TERRAFORM_VERSION=0.11.14
+RUN curl -fsSLo /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip &&  \
+	echo "9b9a4492738c69077b079e595f5b2a9ef1bc4e8fb5596610f69a6f322a8af8dd /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" | sha256sum -c && \ 
+    unzip /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/bin
 RUN go clean -i net && \
 	go install -tags netgo std && \
 	go install -race -tags netgo std
 RUN go get -tags netgo \
 		github.com/FiloSottile/gvt \
 		github.com/client9/misspell/cmd/misspell \
-		github.com/fatih/hclfmt \
 		github.com/fzipp/gocyclo \
 		github.com/gogo/protobuf/gogoproto \
 		github.com/gogo/protobuf/protoc-gen-gogoslick \
