@@ -25,7 +25,8 @@ RUN curl -fsSLo shfmt https://github.com/mvdan/sh/releases/download/v1.3.0/shfmt
 ENV TERRAFORM_VERSION=0.11.14
 RUN curl -fsSLo /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip &&  \
 	echo "9b9a4492738c69077b079e595f5b2a9ef1bc4e8fb5596610f69a6f322a8af8dd /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" | sha256sum -c && \ 
-    unzip /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/bin
+    unzip /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/bin && \
+	rm /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
 RUN go clean -i net && \
 	go install -tags netgo std && \
 	go install -race -tags netgo std
