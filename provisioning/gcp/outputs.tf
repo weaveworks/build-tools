@@ -11,10 +11,10 @@ output "private_ips" {
 }
 
 output "hostnames" {
-  value = "${join("\n", 
-    "${formatlist("%v.%v.%v", 
-      google_compute_instance.tf_test_vm.*.name, 
-      google_compute_instance.tf_test_vm.*.zone, 
+  value = "${join("\n",
+    "${formatlist("%v.%v.%v",
+      google_compute_instance.tf_test_vm.*.name,
+      google_compute_instance.tf_test_vm.*.zone,
       var.app
     )}"
   )}"
@@ -22,11 +22,11 @@ output "hostnames" {
 
 # /etc/hosts file for the Compute Engine instances:
 output "private_etc_hosts" {
-  value = "${join("\n", 
-    "${formatlist("%v %v.%v.%v", 
+  value = "${join("\n",
+    "${formatlist("%v %v.%v.%v",
       google_compute_instance.tf_test_vm.*.network_interface.0.network_ip,
-      google_compute_instance.tf_test_vm.*.name, 
-      google_compute_instance.tf_test_vm.*.zone, 
+      google_compute_instance.tf_test_vm.*.name,
+      google_compute_instance.tf_test_vm.*.zone,
       var.app
     )}"
   )}"
@@ -34,11 +34,11 @@ output "private_etc_hosts" {
 
 # /etc/hosts file for the client:
 output "public_etc_hosts" {
-  value = "${join("\n", 
-    "${formatlist("%v %v.%v.%v", 
+  value = "${join("\n",
+    "${formatlist("%v %v.%v.%v",
       google_compute_instance.tf_test_vm.*.network_interface.0.access_config.0.nat_ip,
-      google_compute_instance.tf_test_vm.*.name, 
-      google_compute_instance.tf_test_vm.*.zone, 
+      google_compute_instance.tf_test_vm.*.name,
+      google_compute_instance.tf_test_vm.*.zone,
       var.app
     )}"
   )}"

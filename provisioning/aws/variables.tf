@@ -64,5 +64,5 @@ variable "aws_usernames" {
 
 variable "aws_size" {
   description = "AWS' selected machine size"
-  default     = "t2.medium"                  # Instance with 2 cores & 4 GB memory
+  default     = "t2.medium" # Instance with 2 cores & 4 GB memory
 }

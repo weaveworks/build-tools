@@ -7,10 +7,10 @@ output "public_ips" {
 }
 
 output "hostnames" {
-  value = "${join("\n", 
-    "${formatlist("%v.%v.%v", 
-      digitalocean_droplet.tf_test_vm.*.name, 
-      digitalocean_droplet.tf_test_vm.*.region, 
+  value = "${join("\n",
+    "${formatlist("%v.%v.%v",
+      digitalocean_droplet.tf_test_vm.*.name,
+      digitalocean_droplet.tf_test_vm.*.region,
       var.app
     )}"
   )}"
@@ -21,11 +21,11 @@ output "hostnames" {
 # be consistent with other providers' recipes, we provide an output to generate
 # an /etc/hosts file on the Droplets, even though it is using public IPs only.
 output "private_etc_hosts" {
-  value = "${join("\n", 
-    "${formatlist("%v %v.%v.%v", 
-      digitalocean_droplet.tf_test_vm.*.ipv4_address, 
-      digitalocean_droplet.tf_test_vm.*.name, 
-      digitalocean_droplet.tf_test_vm.*.region, 
+  value = "${join("\n",
+    "${formatlist("%v %v.%v.%v",
+      digitalocean_droplet.tf_test_vm.*.ipv4_address,
+      digitalocean_droplet.tf_test_vm.*.name,
+      digitalocean_droplet.tf_test_vm.*.region,
       var.app
     )}"
   )}"
@@ -33,11 +33,11 @@ output "private_etc_hosts" {
 
 # /etc/hosts file for the client:
 output "public_etc_hosts" {
-  value = "${join("\n", 
-    "${formatlist("%v %v.%v.%v", 
-      digitalocean_droplet.tf_test_vm.*.ipv4_address, 
-      digitalocean_droplet.tf_test_vm.*.name, 
-      digitalocean_droplet.tf_test_vm.*.region, 
+  value = "${join("\n",
+    "${formatlist("%v %v.%v.%v",
+      digitalocean_droplet.tf_test_vm.*.ipv4_address,
+      digitalocean_droplet.tf_test_vm.*.name,
+      digitalocean_droplet.tf_test_vm.*.region,
       var.app
     )}"
   )}"
