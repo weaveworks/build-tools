@@ -1,4 +1,4 @@
-FROM golang:1.14.4-stretch
+FROM golang:1.16.7-stretch
 RUN apt-get update && \
     apt-get install -y \
       curl \
@@ -36,7 +36,6 @@ RUN go get -tags netgo \
 		github.com/fzipp/gocyclo \
 		github.com/gogo/protobuf/gogoproto \
 		github.com/gogo/protobuf/protoc-gen-gogoslick \
-		github.com/golang/dep/... \
 		golang.org/x/lint/golint \
 		github.com/golang/protobuf/protoc-gen-go \
 		github.com/kisielk/errcheck \

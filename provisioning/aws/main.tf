@@ -1,7 +1,8 @@
 # Specify the provider and access details
 provider "aws" {
   # Access key, secret key and region are sourced from environment variables or input arguments -- see README.md
-  region = "${var.aws_dc}"
+  region  = var.aws_dc
+  version = "~> 3.37"
 }
 
 resource "aws_security_group" "allow_ssh" {
@@ -16,9 +17,9 @@ resource "aws_security_group" "allow_ssh" {
     cidr_blocks = ["${var.client_ip}/32"]
   }
 
-  tags {
+  tags = {
     Name      = "${var.name}_allow_ssh"
-    App       = "${var.app}"
+    App       = "var.app"
     CreatedBy = "terraform"
   }
 }
@@ -35,9 +36,9 @@ resource "aws_security_group" "allow_docker" {
     cidr_blocks = ["${var.client_ip}/32"]
   }
 
-  tags {
+  tags = {
     Name      = "${var.name}_allow_docker"
-    App       = "${var.app}"
+    App       = "var.app"
     CreatedBy = "terraform"
   }
 }
@@ -54,9 +55,9 @@ resource "aws_security_group" "allow_weave" {
     cidr_blocks = ["${var.client_ip}/32"]
   }
 
-  tags {
+  tags = {
     Name      = "${var.name}_allow_weave"
-    App       = "${var.app}"
+    App       = "var.app"
     CreatedBy = "terraform"
   }
 }
@@ -70,12 +71,12 @@ resource "aws_security_group" "allow_private_ingress" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["${var.aws_vpc_cidr_block}"]
+    cidr_blocks = [var.aws_vpc_cidr_block]
   }
 
-  tags {
+  tags = {
     Name      = "${var.name}_allow_private_ingress"
-    App       = "${var.app}"
+    App       = var.app
     CreatedBy = "terraform"
   }
 }
@@ -92,28 +93,28 @@ resource "aws_security_group" "allow_all_egress" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags {
+  tags = {
     Name      = "${var.name}_allow_all_egress"
-    App       = "${var.app}"
+    App       = var.app
     CreatedBy = "terraform"
   }
 }
 
 resource "aws_instance" "tf_test_vm" {
-  instance_type = "${var.aws_size}"
-  count         = "${var.num_hosts}"
+  instance_type = var.aws_size
+  count         = var.num_hosts
 
   # Lookup the correct AMI based on the region we specified
-  ami = "${lookup(var.aws_amis, var.aws_dc)}"
+  ami = lookup(var.aws_amis, var.aws_dc)
 
-  key_name = "${var.aws_public_key_name}"
+  key_name = var.aws_public_key_name
 
   security_groups = [
-    "${aws_security_group.allow_ssh.name}",
-    "${aws_security_group.allow_docker.name}",
-    "${aws_security_group.allow_weave.name}",
-    "${aws_security_group.allow_private_ingress.name}",
-    "${aws_security_group.allow_all_egress.name}",
+    aws_security_group.allow_ssh.name,
+    aws_security_group.allow_docker.name,
+    aws_security_group.allow_weave.name,
+    aws_security_group.allow_private_ingress.name,
+    aws_security_group.allow_all_egress.name,
   ]
 
   # Wait for machine to be SSH-able:
@@ -121,17 +122,17 @@ resource "aws_instance" "tf_test_vm" {
     inline = ["exit"]
 
     connection {
+      host = aws_instance.tf_test_vm[count.index].public_ip
       type = "ssh"
-
       # Lookup the correct username based on the AMI we specified
-      user        = "${lookup(var.aws_usernames, "${lookup(var.aws_amis, var.aws_dc)}")}"
-      private_key = "${file("${var.aws_private_key_path}")}"
+      user        = lookup(var.aws_usernames, lookup(var.aws_amis, var.aws_dc))
+      private_key = file(var.aws_private_key_path)
     }
   }
 
-  tags {
+  tags = {
     Name      = "${var.name}-${count.index}"
-    App       = "${var.app}"
+    App       = var.app
     CreatedBy = "terraform"
   }
 }

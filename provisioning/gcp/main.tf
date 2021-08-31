@@ -7,39 +7,40 @@ provider "google" {
   # See also:
   # - https://www.terraform.io/docs/providers/google/
   # - https://console.cloud.google.com/apis/credentials/serviceaccountkey?project=<PROJECT ID>&authuser=1
-  region = "${var.gcp_region}"
+  region = "var.gcp_region"
 
-  project = "${var.gcp_project}"
+  project = "var.gcp_project"
+  version = "~> 3.65.0"
 }
 
 resource "google_compute_instance" "tf_test_vm" {
   name         = "${var.name}-${count.index}"
-  machine_type = "${var.gcp_size}"
-  zone         = "${var.gcp_zone}"
-  count        = "${var.num_hosts}"
+  machine_type = var.gcp_size
+  zone         = var.gcp_zone
+  count        = var.num_hosts
 
   boot_disk {
     initialize_params {
-      image = "${var.gcp_image}"
+      image = var.gcp_image
     }
   }
 
   tags = [
-    "${var.app}",
-    "${var.name}",
+    "var.app",
+    "var.name",
     "terraform",
   ]
 
   network_interface {
-    network = "${var.gcp_network}"
+    network = var.gcp_network
 
     access_config {
       // Ephemeral IP
     }
   }
 
-  metadata {
-    ssh-keys = "${var.gcp_username}:${file("${var.gcp_public_key_path}")}"
+  metadata = {
+    ssh-keys = "var.gcp_username:file(var.gcp_public_key_path)"
   }
 
   # Wait for machine to be SSH-able:
@@ -47,49 +48,50 @@ resource "google_compute_instance" "tf_test_vm" {
     inline = ["exit"]
 
     connection {
+      host        = google_compute_instance.tf_test_vm[count.index].network_interface.access_config.nat_ip
       type        = "ssh"
-      user        = "${var.gcp_username}"
-      private_key = "${file("${var.gcp_private_key_path}")}"
+      user        = "var.gcp_username"
+      private_key = "file(var.gcp_private_key_path)"
     }
   }
 }
 
 resource "google_compute_firewall" "fw-allow-docker-and-weave" {
   name        = "${var.name}-allow-docker-and-weave"
-  network     = "${var.gcp_network}"
-  target_tags = ["${var.name}"]
+  network     = "var.gcp_network"
+  target_tags = ["var.name"]
 
   allow {
     protocol = "tcp"
     ports    = ["2375", "12375"]
   }
 
-  source_ranges = ["${var.client_ip}"]
+  source_ranges = ["var.client_ip"]
 }
 
 # Required for FastDP crypto in Weave Net:
 resource "google_compute_firewall" "fw-allow-esp" {
   name        = "${var.name}-allow-esp"
-  network     = "${var.gcp_network}"
-  target_tags = ["${var.name}"]
+  network     = "var.gcp_network"
+  target_tags = ["var.name"]
 
   allow {
     protocol = "esp"
   }
 
-  source_ranges = ["${var.gcp_network_global_cidr}"]
+  source_ranges = ["var.gcp_network_global_cidr"]
 }
 
 # Required for WKS Kubernetes API server access
 resource "google_compute_firewall" "fw-allow-kube-apiserver" {
   name        = "${var.name}-allow-kube-apiserver"
-  network     = "${var.gcp_network}"
-  target_tags = ["${var.name}"]
+  network     = var.gcp_network
+  target_tags = ["var.name"]
 
   allow {
     protocol = "tcp"
     ports    = ["6443"]
   }
 
-  source_ranges = ["${var.client_ip}"]
+  source_ranges = ["var.client_ip"]
 }
