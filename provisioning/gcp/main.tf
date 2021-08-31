@@ -48,6 +48,7 @@ resource "google_compute_instance" "tf_test_vm" {
     inline = ["exit"]
 
     connection {
+      host = google_compute_instance.tf_test_vm[count.index].network_interface.access_config.nat_ip
       type        = "ssh"
       user        = "var.gcp_username"
       private_key = "file(var.gcp_private_key_path)"

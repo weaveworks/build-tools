@@ -123,6 +123,7 @@ resource "aws_instance" "tf_test_vm" {
     inline = ["exit"]
 
     connection {
+      host = aws_instance.tf_test_vm[count.index].public_ip
       type = "ssh"
       # Lookup the correct username based on the AMI we specified
       user        = lookup(var.aws_usernames, lookup(var.aws_amis, var.aws_dc))
