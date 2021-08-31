@@ -35,7 +35,7 @@ resource "digitalocean_droplet" "tf_test_vm" {
     inline = ["exit"]
 
     connection {
-      host = digitalocean_droplet.tf_test_vm[count.index].ipv4_address
+      host        = digitalocean_droplet.tf_test_vm[count.index].ipv4_address
       type        = "ssh"
       user        = var.do_username
       private_key = file(var.do_private_key_path)

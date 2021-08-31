@@ -1,7 +1,7 @@
 # Specify the provider and access details
 provider "aws" {
   # Access key, secret key and region are sourced from environment variables or input arguments -- see README.md
-  region = var.aws_dc
+  region  = var.aws_dc
   version = "~> 3.37"
 }
 
@@ -68,11 +68,11 @@ resource "aws_security_group" "allow_private_ingress" {
 
   # Full inbound local network access on both TCP and UDP
   ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
     cidr_blocks = [
-      var.aws_vpc_cidr_block]
+    var.aws_vpc_cidr_block]
   }
 
   tags = {
